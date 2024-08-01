@@ -1,18 +1,15 @@
-import java.util.HashMap;
-import java.util.Map;
-
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+    Board board = new Board();
+    BoardConsoleView view = new BoardConsoleView();
+    view.render(board);
 
-        Map<Integer,Integer> map = new HashMap<>();
-        map.put(3,0);
-        map.put(4,0);
-        System.out.println(map);
 
-        map.put(3, map.get(3) + 1 );
-        System.out.println(map);
+
+
+
 
     }
     // пишется в кнсоль координаты из которых мы хотим, и кординаты куда мы хотим,
