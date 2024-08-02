@@ -12,9 +12,10 @@ public abstract class Piece {
         this.coordinates = coordinates;
     }
 
-    public abstract List<Coordinates> moveOptions(Piece piece);
+
+protected abstract boolean pieceTypeAbilityToMove(Piece piece,Coordinates to);
 
 
-
-
+    public abstract List<Coordinates> everyStepToPoint(Piece piece, Coordinates to)
+            throws RuntimeException;
 }

@@ -1,6 +1,5 @@
 package pieces;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends  Piece{
@@ -9,12 +8,14 @@ public class Pawn extends  Piece{
     }
 
     @Override
-    public List<Coordinates> moveOptions(Piece piece) {
-        return piece.color == Color.WHITE ?
-                new ArrayList<>(List.of(new Coordinates(piece.coordinates.file,
-                        piece.coordinates.rank +1))) :
-
-                new ArrayList<>(List.of(new Coordinates(piece.coordinates.file,
-                        piece.coordinates.rank -1)));
+    protected boolean pieceTypeAbilityToMove(Piece piece, Coordinates to) {
+        return false;
     }
+
+    @Override
+    public List<Coordinates> everyStepToPoint(Piece piece, Coordinates to) throws RuntimeException {
+        return null;
+    }
+
+
 }

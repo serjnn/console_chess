@@ -46,7 +46,7 @@ public class BoardConsoleView {
                 res = "r";
                 break;
 
-            case "Queen":
+            case "pieces.Queen":
                 res = "q";
                 break;
 
