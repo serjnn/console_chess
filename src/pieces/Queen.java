@@ -9,14 +9,17 @@ public class Queen extends Piece {
 
     @Override
     protected boolean pieceTypeAbilityToMove(Piece piece, Coordinates to) {
-        return false;
-    }//// any_0 0_any
-    //D8 - D1
-    // == 3_8 - 3_1
-
+        return true;
+    }
     @Override
-    public List<Coordinates> everyStepToPoint(Piece piece, Coordinates to) throws RuntimeException {
-        return null;
+    public List<Coordinates> everyStepToPoint(Piece piece, Coordinates to)
+            throws RuntimeException {
+        if (!pieceTypeAbilityToMove(piece,to)) throw new RuntimeException(
+                "queen does not move like that");
+        if (piece.coordinates.file == to.file || piece.coordinates.rank == to.rank){
+
+        }
+return null ;
     }
 
 
