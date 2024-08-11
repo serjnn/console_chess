@@ -54,7 +54,7 @@ public abstract class Piece {
             );
 
         }
-        return steps.subList(1, steps.size());
+        return steps.subList(1, steps.size()-1);
     }
 
     public List<Coordinates> straightMoveSteps(Coordinates to) {
@@ -87,7 +87,7 @@ public abstract class Piece {
                 return fileChanges.stream()
                         .map(file -> new Coordinates(File.values()[file], rankFrom)
 
-                        ).toList().subList(1, fileChanges.size());
+                        ).toList().subList(1, fileChanges.size()-1);
             }
         }
     }

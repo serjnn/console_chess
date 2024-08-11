@@ -29,6 +29,7 @@ public class BoardConsoleView {
         System.out.print("  ");
         for (File file : File.values()) System.out.print(file);
         System.out.println();
+        System.out.println(Game.moveCount % 2 == 0 ? "White's turn" : "Black's turn");
     }
 
     private String getSymbolForPiece(Piece piece) {

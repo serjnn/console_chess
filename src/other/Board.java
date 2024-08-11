@@ -73,7 +73,7 @@ public class Board {
         return color;
     }
 
-    public boolean isItEnemy(Coordinates to, Color moveColor) {
+    public boolean isItEnemy (Coordinates to, Color moveColor) {
         return map.get(to).color != moveColor;
 
     }
