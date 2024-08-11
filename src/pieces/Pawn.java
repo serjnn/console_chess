@@ -1,5 +1,7 @@
 package pieces;
 
+import other.Game;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,27 +11,36 @@ public class Pawn extends Piece {
     }
 
     @Override
-    protected boolean isMoveInvalidForThisType(Piece piece, Coordinates to) {
-        int fileFrom = piece.coordinates.file.ordinal();
+    protected boolean isMoveInvalidForThisType(Coordinates to) {
+
+
+        int fileFrom = this.coordinates.file.ordinal();
         int fileTo = to.file.ordinal();
-        int rankFrom = piece.coordinates.rank;
+        int rankFrom = this.coordinates.rank;
         int rankTo = to.rank;
-        boolean forwardOrBeat = fileFrom - 1 == fileTo ||
+        Color color = this.color;
+
+        boolean fileCheck = fileFrom - 1 == fileTo ||
                 fileFrom + 1 == fileTo ||
                 fileFrom == fileTo;
-        if (piece.color == Color.WHITE) {
-            return !(forwardOrBeat && rankTo == rankFrom + 1);
-        } else {
-            return !(forwardOrBeat && rankTo == rankFrom -1);
-        }
-    }
+    int possiblePawnDistanceMove = Game.moveCount < 2 ? 2 : 1;
 
-    @Override
-    public List<Coordinates> everyStepToPoint(Piece piece, Coordinates to) throws RuntimeException {
-        if (isMoveInvalidForThisType(piece, to)) throw new RuntimeException(
-                "pawn does not move like that");
-        return new ArrayList<>(List.of(to));
-    }
+    boolean rankCheck = color == Color.WHITE ? (rankTo == rankFrom +
+            possiblePawnDistanceMove || rankTo == rankFrom + 1) :
+            (rankTo == rankFrom - possiblePawnDistanceMove || rankTo == rankFrom
+                    - 1);
+        return!(fileCheck &&rankCheck);
+}
+
+
+
+@Override
+
+public List<Coordinates> everyStepToPoint(Coordinates to) throws RuntimeException {
+    if (isMoveInvalidForThisType(to)) throw new RuntimeException(
+            "pawn does not move like that");
+    return new ArrayList<>(List.of(to));
+}
 
 
 }

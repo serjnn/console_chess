@@ -9,10 +9,10 @@ public class King extends Piece {
     }
 
     @Override
-    protected boolean isMoveInvalidForThisType(Piece piece, Coordinates to) {
-        int fileFrom = piece.coordinates.file.ordinal();
+    protected boolean isMoveInvalidForThisType( Coordinates to) {
+        int fileFrom = this.coordinates.file.ordinal();
         int fileTo = to.file.ordinal();
-        int rankFrom = piece.coordinates.rank;
+        int rankFrom = this.coordinates.rank;
         int rankTo = to.rank;
 
         return !((fileFrom - 1 == fileTo ||
@@ -26,9 +26,9 @@ public class King extends Piece {
     }
 
     @Override
-    public List<Coordinates> everyStepToPoint(Piece piece, Coordinates to)
+    public List<Coordinates> everyStepToPoint(Coordinates to)
             throws RuntimeException {
-        if (isMoveInvalidForThisType(piece, to)) throw new RuntimeException(
+        if (isMoveInvalidForThisType( to)) throw new RuntimeException(
                 "king does not move like that");
 
         return new ArrayList<>(List.of(to));

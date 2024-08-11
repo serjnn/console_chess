@@ -1,23 +1,31 @@
-import pieces.Color;
-import pieces.Coordinates;
-import pieces.File;
-import pieces.Pawn;
-
-import java.util.List;
+package other;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        Pawn pawn = new Pawn(Color.BLACK,new Coordinates(File.A,2));
-        List<Coordinates> list =
-                (pawn.everyStepToPoint(pawn,new Coordinates(File.B,1)));
-        System.out.println("PAWN:");
-        for (Coordinates c : list) {
-            System.out.print(c.file);
-            System.out.print(c.rank);
-            System.out.println();
-        }
+
+
+//        Bishop bishop = new Bishop(Color.WHITE,new Coordinates(File.B, 3));
+//        System.out.println(bishop.everyStepToPoint(new Coordinates(File.D,5)));
+//
+//
+//Pawn pawn = new Pawn(Color.WHITE,new Coordinates(File.B, 3));
+//        System.out.println(pawn.everyStepToPoint(new Coordinates(File.B,4)));
+        Board board = new Board();
+        board.setupDefault();
+        Game game = new Game();
+        game.gameLoop(board);
+
+//        Pawn pawn = new Pawn(Color.BLACK,new Coordinates(File.A,2));
+//        List<Coordinates> list =
+//                (pawn.everyStepToPoint(pawn,new Coordinates(File.B,1)));
+//        System.out.println("PAWN:");
+//        for (Coordinates c : list) {
+//            System.out.print(c.file);
+//            System.out.print(c.rank);
+//            System.out.println();
+//        }
 
 
 //        King king = new King(Color.BLACK,new Coordinates(File.A,2));
@@ -40,9 +48,7 @@ public class Main {
 //            System.out.println();
 //        }
 
-//    Board board = new Board();
-//    BoardConsoleView view = new BoardConsoleView();
-//    view.render(board);
+
 //
 //
 //

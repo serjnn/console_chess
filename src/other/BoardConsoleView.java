@@ -1,3 +1,5 @@
+package other;
+
 import pieces.Color;
 import pieces.Coordinates;
 import pieces.File;
@@ -7,8 +9,7 @@ public class BoardConsoleView {
 
 
     public void render(Board board) {
-        System.out.print("  ");
-        for (File file : File.values()) System.out.print(file);
+
         System.out.println();
         for (int rank = 8; rank > 0; rank--) {
             String line = rank + " ";
@@ -25,6 +26,9 @@ public class BoardConsoleView {
 
             System.out.println(line);
         }
+        System.out.print("  ");
+        for (File file : File.values()) System.out.print(file);
+        System.out.println();
     }
 
     private String getSymbolForPiece(Piece piece) {
@@ -46,7 +50,7 @@ public class BoardConsoleView {
                 res = "r";
                 break;
 
-            case "pieces.Queen":
+            case "Queen":
                 res = "q";
                 break;
 

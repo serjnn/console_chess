@@ -7,17 +7,20 @@ public class Bishop extends Piece {
         super(color, coordinates);
     }
 
-    protected boolean isMoveInvalidForThisType(Piece piece, Coordinates to) {
-        return Math.abs(piece.coordinates.file.ordinal() - to.file.ordinal()) != Math.abs(piece.coordinates.rank - to.rank);
+
+    @Override
+    protected boolean isMoveInvalidForThisType(Coordinates to) {
+        return Math.abs(this.coordinates.file.ordinal() - to.file.ordinal())
+                != Math.abs(this.coordinates.rank - to.rank);
     }
 
 
     @Override
-    public List<Coordinates> everyStepToPoint(Piece piece, Coordinates to)
+    public List<Coordinates> everyStepToPoint(Coordinates to)
             throws RuntimeException {
-        if (isMoveInvalidForThisType(piece, to)) throw new RuntimeException(
+        if (isMoveInvalidForThisType( to)) throw new RuntimeException(
                 "bishop does not move like that");
-        return diagonalMoveSteps(piece,to);
+        return diagonalMoveSteps(to);
     }
 
 }
