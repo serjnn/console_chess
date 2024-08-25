@@ -4,14 +4,15 @@ package other;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+//        Rook rook = new Rook(Color.BLACK, new Coordinates(File.A, 6));
+//        List<Coordinates> list =
+//                (rook.everyStepToPoint(new Coordinates(File.A, 2)));
+//        System.out.println(list);
 
 
-//        Bishop bishop = new Bishop(Color.WHITE,new Coordinates(File.B, 3));
-//        System.out.println(bishop.everyStepToPoint(new Coordinates(File.D,5)));
-//
-//
-//Pawn pawn = new Pawn(Color.WHITE,new Coordinates(File.B, 3));
-//        System.out.println(pawn.everyStepToPoint(new Coordinates(File.B,4)));
+
+
+
         Board board = new Board();
         board.setupDefault();
         Game game = new Game();
@@ -52,15 +53,7 @@ public class Main {
 //
 //
 //
-//        Rook rook = new Rook(Color.BLACK,new Coordinates(File.A,6));
-//        List<Coordinates> list =
-//                (rook.everyStepToPoint(rook,new Coordinates(File.A,2)));
-//        System.out.println("ROOK:");
-//        for (Coordinates c : list) {
-//            System.out.print(c.file);
-//            System.out.print(c.rank);
-//            System.out.println();
-//        }
+
 //
 //        Bishop bishop = new Bishop(Color.BLACK,new Coordinates(File.F,6));
 //        List<Coordinates> list2 =
@@ -71,9 +64,7 @@ public class Main {
 ////            System.out.print(c.rank);
 ////            System.out.println();
 ////        }
-//        Queen queen = new Queen(Color.BLACK,new Coordinates(File.A,5));
-//        List<Coordinates> list3 =
-//                (queen.everyStepToPoint(queen,new Coordinates(File.A,1)));
+
 //        System.out.println("QUEEN:");
 //        for (Coordinates c : list3) {
 //            System.out.print(c.file);

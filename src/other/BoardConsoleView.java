@@ -6,20 +6,43 @@ import pieces.File;
 import pieces.Piece;
 
 public class BoardConsoleView {
+    public static final String ANSI_WHITE_SQUARE_BACKGROUND = "\u001B[42m";
+    public static final String ANSI_BLACK_SQUARE_BACKGROUND = "\u001B[41m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+
+
+
+    public static final String ANSI_RESET = "\u001B[0m";
 
 
     public void render(Board board) {
+        System.out.print("  ");
 
+        for (File file : File.values()) System.out.print(" " + file + " ");
         System.out.println();
+
         for (int rank = 8; rank > 0; rank--) {
             String line = rank + " ";
 
             for (File file : File.values()) {
                 Coordinates coordinates = new Coordinates(file, rank);
                 if (board.isSquareEmpty(coordinates)) {
-                    line += "_";
+                    if (!board.isSquareDark(coordinates)) {
+                        line +=
+                                ANSI_WHITE_SQUARE_BACKGROUND + "   " + ANSI_RESET;
+                    } else {
+                        line += ANSI_BLACK_SQUARE_BACKGROUND+"   " + ANSI_RESET;
+                    }
                 } else {
-                    line += getSymbolForPiece(board.getPiece(coordinates));
+                    line +=
+                            !board.isSquareDark(coordinates) ?
+                                    ANSI_WHITE_SQUARE_BACKGROUND +
+                                            getSymbolForPiece(board.getPiece(coordinates))
+                                            + ANSI_RESET :
+                                    ANSI_BLACK_SQUARE_BACKGROUND+ getSymbolForPiece(
+                                            board.getPiece(coordinates))
+                     + ANSI_RESET;
+
                 }
             }
 
@@ -27,10 +50,13 @@ public class BoardConsoleView {
             System.out.println(line);
         }
         System.out.print("  ");
-        for (File file : File.values()) System.out.print(file);
+        for (File file : File.values()) System.out.print(" " + file + " ");
         System.out.println();
         System.out.println(Game.moveCount % 2 == 0 ? "White's turn" : "Black's turn");
     }
+
+
+
 
     private String getSymbolForPiece(Piece piece) {
         String res = "";
@@ -60,7 +86,9 @@ public class BoardConsoleView {
                 break;
         }
 
-        return piece.color == Color.WHITE ? res : res.toUpperCase();
+        return piece.color == Color.WHITE ?
+                " " + res.toUpperCase() + " " :
+                ANSI_BLACK +  " " + res.toUpperCase() + " " + ANSI_RESET;
     }
 
 

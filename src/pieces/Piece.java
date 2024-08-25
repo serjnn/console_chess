@@ -73,7 +73,7 @@ public abstract class Piece {
             return rankChanges.stream()
                     .map(rank -> new Coordinates(File.values()[fileFrom], rank)
 
-                    ).toList().subList(1,rankChanges.size());
+                    ).toList().subList(1,rankChanges.size() -1);
         } else {
             {
                 List<Integer> fileChanges = new ArrayList<>(IntStream.rangeClosed
@@ -99,4 +99,5 @@ public abstract class Piece {
                 ", coordinates=" + coordinates +
                 '}';
     }
+
 }

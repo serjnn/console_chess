@@ -39,7 +39,7 @@ public class Pawn extends Piece {
 public List<Coordinates> everyStepToPoint(Coordinates to) throws RuntimeException {
     if (isMoveInvalidForThisType(to)) throw new RuntimeException(
             "pawn does not move like that");
-    return new ArrayList<>(List.of(to));
+    return new ArrayList<>(List.of());
 }
 
 

@@ -1,29 +1,37 @@
 package other;
 
-import pieces.Color;
-import pieces.Coordinates;
-import pieces.File;
-import pieces.Piece;
+import pieces.*;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
 
+    public static Coordinates whiteKingCoords;
+    public static Coordinates blackKingCoords;
+
+    static {
+        whiteKingCoords = new Coordinates(File.E, 1);
+        blackKingCoords = new Coordinates(File.E, 8);
+        lastPiece = new Pawn(Color.WHITE, new Coordinates(File.A,1));
+    }
 
     public static short moveCount = 0;
+    public static Color moveColor;
+
+    static Piece lastPiece;
 
 
     public void gameLoop(Board board) {
 
 
         while (true) {
-            Color moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+            System.out.println(lastPiece + " last piece");
+
+            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
             BoardConsoleView view = new BoardConsoleView();
             view.render(board);
             Scanner scanner = new Scanner(System.in);
+
 
             String move = scanner.nextLine();
             Coordinates from = new Coordinates(File
@@ -37,82 +45,46 @@ public class Game {
 
 
             try {
-                if (board.getPieceColor(from) != moveColor) {
-                    System.out.println(ANSI_RED + "that piece isn't yours" + ANSI_RESET);
-                    continue;
-                }
-            } catch (NullPointerException np) {
-                System.out.println(ANSI_RED + "there is empty from where u wanna move"
-                + ANSI_RESET);
+                board.isUnderCheck(lastPiece);
+            } catch (RuntimeException re) {
+                System.out.println(re.getMessage());
                 continue;
             }
 
-            if (!board.isSquareEmpty(to) && !board.isItEnemy(to, moveColor)) {
 
-                        System.out.println(ANSI_RED + "u cant beat ur pieces" + ANSI_RESET);
-                        continue;
-                    }
-
-
-
-            if (to.rank < 1 || to.rank > 8) {
-                System.out.println(ANSI_RED + "u cant go outside the map" + ANSI_RESET);
-
-            } else {
-                Piece piece = board.getPiece(from);
-//                        System.out.println(from);
-//            System.out.println(to);
-//            System.out.println(piece);
-//            System.out.println(piece.getClass().getSimpleName());
-                try {
-                    if (piece.getClass().getSimpleName().equals("Pawn") &&
-                            from.file != to.file && !(board.isItEnemy(to, moveColor))) {
-                        System.out.println(ANSI_RED + "u cant move like that " +
-                                "cuz pawn is not attacking " + ANSI_RESET);
-                        continue;
-                    }
-                } catch (NullPointerException np) {
-                    System.out.println(ANSI_RED + "pawn does not move like that" + ANSI_RESET);
-                    continue;
-                }
-                List<Coordinates> steps = null;
-                try {
-                    steps = piece.everyStepToPoint(to);
-                } catch (RuntimeException re) {
-                    System.out.println(ANSI_RED  +re.getMessage() + ANSI_RESET);
-                    continue;
-
-                }
-                if (!isWayToPointEmpty(steps,board)) {
-                    System.out.println(ANSI_RED + "u cant go through piece" +
-                            ANSI_RESET);
-                    continue;
-                }
-
-                board.removePieceFromSquare(from);
-                board.setPiece(to, piece);
-
-                moveCount++;
+            try {
+                board.isMoveValid(from, to);
+            } catch (RuntimeException re) {
+                System.out.println(re.getMessage());
+                continue;
 
             }
 
-
-        }
-
-    }
-
-    private boolean isWayToPointEmpty(List<Coordinates> steps, Board board) {
-        for (Coordinates cords : steps) {
-            if (board.map.containsKey(cords)) {
-                return false;
+            Piece piece = board.getPiece(from);
+            // tracking king's coords
+            if (piece.getClass().getSimpleName().equals("King")) {
+                if (moveColor == Color.WHITE) {
+                    whiteKingCoords = to;
+                } else {
+                    blackKingCoords = to;
+                }
 
             }
+            board.removePieceFromSquare(from);
+            board.setPiece(to, piece);
+            lastPiece = piece;
+            moveCount++;
+
         }
-        return true;
+
 
     }
-
-
-
 
 }
+
+
+
+
+
+
+

@@ -31,7 +31,7 @@ public class King extends Piece {
         if (isMoveInvalidForThisType( to)) throw new RuntimeException(
                 "king does not move like that");
 
-        return new ArrayList<>(List.of(to));
+        return new ArrayList<>(List.of());
 
     }
 
