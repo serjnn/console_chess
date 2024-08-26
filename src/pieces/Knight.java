@@ -10,10 +10,10 @@ public class Knight extends Piece {
 
     @Override
     protected boolean isMoveInvalidForThisType(Coordinates to) {
-        int fileFrom = this.coordinates.file.ordinal();
-        int fileTo = to.file.ordinal();
-        int rankFrom = this.coordinates.rank;
-        int rankTo = to.rank;
+        int fileFrom = this.coordinates.file.ordinal(),
+                fileTo = to.file.ordinal(),
+                rankFrom = this.coordinates.rank,
+                rankTo = to.rank;
         return !(((fileTo == fileFrom + 1 || fileTo == fileFrom - 1) && (rankTo ==
                 rankFrom + 2 || rankTo == rankFrom - 2))
                 ||
@@ -23,21 +23,11 @@ public class Knight extends Piece {
 
     @Override
     public List<Coordinates> everyStepToPoint(Coordinates to) throws RuntimeException {
-        if (isMoveInvalidForThisType( to)) throw new RuntimeException(
+        if (isMoveInvalidForThisType(to)) throw new RuntimeException(
                 "knight does not move like that");
         return new ArrayList<>(List.of(to));
 
     }
-    //   // 2_1 1_2 = {2,1} and {1,2} - file and rank lists with differences of available
-    //        //move for this type of piece
-    //        //B1 - C3
-    //        // == 1_1 - 2_3
-    //
-    //
-    //        // int diffFile =  to.file.ordinal() - from.file.ordinal
-    //        //int diffRank = to.rank - from.rank
-    //        //if {2,1} contains diffFile  && {1,2}
-    //        // contains diffRank -> that type of piece can move to this pos
 
 
 }

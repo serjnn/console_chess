@@ -7,9 +7,6 @@ public class Rook extends Piece {
         super(color, coordinates);
     }
 
-    // // any_0 0_any
-//    //D8 - D1
-//    // == 3_8 - 3_1
     @Override
     protected boolean isMoveInvalidForThisType(Coordinates to) {
 

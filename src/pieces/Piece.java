@@ -54,7 +54,7 @@ public abstract class Piece {
             );
 
         }
-        return steps.subList(1, steps.size()-1);
+        return steps.subList(1, steps.size());
     }
 
     public List<Coordinates> straightMoveSteps(Coordinates to) {
@@ -73,7 +73,7 @@ public abstract class Piece {
             return rankChanges.stream()
                     .map(rank -> new Coordinates(File.values()[fileFrom], rank)
 
-                    ).toList().subList(1,rankChanges.size() -1);
+                    ).toList().subList(1,rankChanges.size() );
         } else {
             {
                 List<Integer> fileChanges = new ArrayList<>(IntStream.rangeClosed
@@ -87,7 +87,7 @@ public abstract class Piece {
                 return fileChanges.stream()
                         .map(file -> new Coordinates(File.values()[file], rankFrom)
 
-                        ).toList().subList(1, fileChanges.size()-1);
+                        ).toList().subList(1, fileChanges.size());
             }
         }
     }

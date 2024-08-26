@@ -25,8 +25,6 @@ public class Game {
 
 
         while (true) {
-            System.out.println(lastPiece + " last piece");
-
             moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
             BoardConsoleView view = new BoardConsoleView();
             view.render(board);
@@ -44,12 +42,11 @@ public class Game {
                     , Character.getNumericValue(move.charAt(4)));
 
 
-            try {
-                board.isUnderCheck(lastPiece);
-            } catch (RuntimeException re) {
-                System.out.println(re.getMessage());
-                continue;
-            }
+//            try {
+//                board.isUnderCheck(lastPiece);
+//            } catch (RuntimeException re) {
+//                continue;
+//            }
 
 
             try {

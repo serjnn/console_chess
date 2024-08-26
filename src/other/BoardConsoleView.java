@@ -9,10 +9,9 @@ public class BoardConsoleView {
     public static final String ANSI_WHITE_SQUARE_BACKGROUND = "\u001B[42m";
     public static final String ANSI_BLACK_SQUARE_BACKGROUND = "\u001B[41m";
     public static final String ANSI_BLACK = "\u001B[30m";
-
-
-
     public static final String ANSI_RESET = "\u001B[0m";
+    private static final String WHITE_BACK = ANSI_WHITE_SQUARE_BACKGROUND + "   " + ANSI_RESET;
+    public static final String BLACK_BACK = ANSI_BLACK_SQUARE_BACKGROUND + "   " + ANSI_RESET;
 
 
     public void render(Board board) {
@@ -26,24 +25,18 @@ public class BoardConsoleView {
 
             for (File file : File.values()) {
                 Coordinates coordinates = new Coordinates(file, rank);
-                if (board.isSquareEmpty(coordinates)) {
-                    if (!board.isSquareDark(coordinates)) {
-                        line +=
-                                ANSI_WHITE_SQUARE_BACKGROUND + "   " + ANSI_RESET;
-                    } else {
-                        line += ANSI_BLACK_SQUARE_BACKGROUND+"   " + ANSI_RESET;
-                    }
-                } else {
-                    line +=
-                            !board.isSquareDark(coordinates) ?
-                                    ANSI_WHITE_SQUARE_BACKGROUND +
-                                            getSymbolForPiece(board.getPiece(coordinates))
-                                            + ANSI_RESET :
-                                    ANSI_BLACK_SQUARE_BACKGROUND+ getSymbolForPiece(
-                                            board.getPiece(coordinates))
-                     + ANSI_RESET;
 
+                if (board.isSquareWhite(coordinates)) {
+                    line += board.isSquareEmpty(coordinates) ? WHITE_BACK :
+                            ANSI_WHITE_SQUARE_BACKGROUND + getSymbolForPiece(board.getPiece(coordinates)) + ANSI_RESET;
+
+
+                } else {
+                    line += board.isSquareEmpty(coordinates) ? BLACK_BACK :
+                            ANSI_BLACK_SQUARE_BACKGROUND + getSymbolForPiece(board.getPiece(coordinates)) + ANSI_RESET;
                 }
+
+
             }
 
 
@@ -56,39 +49,18 @@ public class BoardConsoleView {
     }
 
 
-
-
     private String getSymbolForPiece(Piece piece) {
-        String res = "";
-        switch (piece.getClass().getSimpleName()) {
-            case "Pawn":
-                res = "p";
-                break;
+        String res = switch (piece.getClass().getSimpleName()) {
+            case "Pawn" -> "p";
+            case "Knight" -> "h";
+            case "Bishop" -> "b";
+            case "Rook" -> "r";
+            case "Queen" -> "q";
+            case "King" -> "k";
+            default -> "";
+        };
 
-            case "Knight":
-                res = "h";
-                break;
-
-            case "Bishop":
-                res = "b";
-                break;
-
-            case "Rook":
-                res = "r";
-                break;
-
-            case "Queen":
-                res = "q";
-                break;
-
-            case "King":
-                res = "k";
-                break;
-        }
-
-        return piece.color == Color.WHITE ?
-                " " + res.toUpperCase() + " " :
-                ANSI_BLACK +  " " + res.toUpperCase() + " " + ANSI_RESET;
+        return piece.color == Color.WHITE ? " " + res.toUpperCase() + " " : ANSI_BLACK + " " + res.toUpperCase() + " " + ANSI_RESET;
     }
 
 

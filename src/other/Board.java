@@ -136,6 +136,7 @@ public class Board {
 
 
     private boolean isWayToPointEmpty(List<Coordinates> steps) {
+        steps = steps.subList(0,steps.size()-1);
         for (Coordinates cords : steps) {
             if (map.containsKey(cords)) {
                 System.out.println(map.get(cords));
@@ -147,22 +148,21 @@ public class Board {
 
     }
 
-    public void isUnderCheck(Piece lastPiece) throws RuntimeException {
+//    public void isUnderCheck(Piece lastPiece) throws RuntimeException {
+//
+//        Coordinates kingcords = lastPiece.color == Color.WHITE ?
+//                Game.blackKingCoords :
+//                Game.whiteKingCoords;
+//
+//
+//        try {isMoveValid(lastPiece.coordinates,kingcords);}
+//        catch (RuntimeException re){
+//        }
+//
+//
+//    }
 
-        Coordinates kingcords = lastPiece.color == Color.WHITE ?
-                Game.blackKingCoords :
-                Game.whiteKingCoords;
-
-
-        try {isMoveValid(lastPiece.coordinates,kingcords);}
-        catch (RuntimeException re){
-            System.out.println(re.getMessage());
-        }
-
-
-    }
-
-    public boolean isSquareDark(Coordinates coordinates) {
+    public boolean isSquareWhite(Coordinates coordinates) {
         return ((coordinates.file.ordinal() + 1) % 2 == 0 && coordinates.rank % 2 == 0) || (
                 (coordinates.file.ordinal() + 1) % 2 != 0 && coordinates.rank % 2 != 0
         );

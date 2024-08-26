@@ -10,10 +10,10 @@ public class King extends Piece {
 
     @Override
     protected boolean isMoveInvalidForThisType( Coordinates to) {
-        int fileFrom = this.coordinates.file.ordinal();
-        int fileTo = to.file.ordinal();
-        int rankFrom = this.coordinates.rank;
-        int rankTo = to.rank;
+        int fileFrom = this.coordinates.file.ordinal(),
+                fileTo = to.file.ordinal(),
+                rankFrom = this.coordinates.rank,
+                rankTo = to.rank;
 
         return !((fileFrom - 1 == fileTo ||
                 fileFrom + 1 == fileTo ||
@@ -31,7 +31,7 @@ public class King extends Piece {
         if (isMoveInvalidForThisType( to)) throw new RuntimeException(
                 "king does not move like that");
 
-        return new ArrayList<>(List.of());
+        return new ArrayList<>(List.of(to));
 
     }
 

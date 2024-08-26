@@ -14,7 +14,7 @@ public class Queen extends Piece {
     @Override
     public List<Coordinates> everyStepToPoint( Coordinates to)
             throws RuntimeException {
-        if (isMoveInvalidForThisType( to)) throw new RuntimeException(
+        if (isMoveInvalidForThisType(to)) throw new RuntimeException(
                 "queen does not move like that");
 
 return this.coordinates.file == to.file || this.coordinates.rank == to.rank ?
