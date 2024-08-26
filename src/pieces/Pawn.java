@@ -11,13 +11,13 @@ public class Pawn extends Piece {
     }
 
     @Override
-    protected boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveInvalidForThisType(Coordinates to) {
 
 
-        int fileFrom = this.coordinates.file.ordinal();
-        int fileTo = to.file.ordinal();
-        int rankFrom = this.coordinates.rank;
-        int rankTo = to.rank;
+        int fileFrom = this.coordinates.file.ordinal(),
+                fileTo = to.file.ordinal(),
+                rankFrom = this.coordinates.rank,
+                rankTo = to.rank;
         Color color = this.color;
 
         boolean fileCheck = fileFrom - 1 == fileTo ||
@@ -36,9 +36,7 @@ public class Pawn extends Piece {
 
 @Override
 
-public List<Coordinates> everyStepToPoint(Coordinates to) throws RuntimeException {
-    if (isMoveInvalidForThisType(to)) throw new RuntimeException(
-            "pawn does not move like that");
+public List<Coordinates> everyStepToPoint(Coordinates to)  {
     return new ArrayList<>(List.of(to));
 }
 

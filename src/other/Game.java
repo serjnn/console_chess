@@ -1,6 +1,9 @@
 package other;
 
-import pieces.*;
+import pieces.Color;
+import pieces.Coordinates;
+import pieces.File;
+import pieces.Piece;
 
 import java.util.Scanner;
 
@@ -11,20 +14,21 @@ public class Game {
 
     static {
         whiteKingCoords = new Coordinates(File.E, 1);
-        blackKingCoords = new Coordinates(File.E, 8);
-        lastPiece = new Pawn(Color.WHITE, new Coordinates(File.A,1));
+        blackKingCoords = new Coordinates(File.E, 6);
     }
 
     public static short moveCount = 0;
     public static Color moveColor;
 
-    static Piece lastPiece;
+
 
 
     public void gameLoop(Board board) {
 
 
         while (true) {
+
+
             moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
             BoardConsoleView view = new BoardConsoleView();
             view.render(board);
@@ -40,24 +44,28 @@ public class Game {
                     .valueOf((move.charAt(3) + "")
                             .toUpperCase())
                     , Character.getNumericValue(move.charAt(4)));
+            Piece piece = board.getPiece(from);
 
+        if (piece.isMoveInvalidForThisType(to)){
+            System.out.println(Board.ANSI_RED + piece.getClass().getSimpleName() +
+                    " can't move like that" + Board.ANSI_RESET);
+            continue;
+        }
 
-//            try {
-//                board.isUnderCheck(lastPiece);
-//            } catch (RuntimeException re) {
-//                continue;
-//            }
 
 
             try {
                 board.isMoveValid(from, to);
-            } catch (RuntimeException re) {
+            }
+            catch (NumberFormatException ne) {
+                System.out.print("");
+            }
+            catch (RuntimeException re) {
                 System.out.println(re.getMessage());
                 continue;
 
             }
 
-            Piece piece = board.getPiece(from);
             // tracking king's coords
             if (piece.getClass().getSimpleName().equals("King")) {
                 if (moveColor == Color.WHITE) {
@@ -69,8 +77,19 @@ public class Game {
             }
             board.removePieceFromSquare(from);
             board.setPiece(to, piece);
-            lastPiece = piece;
+
+            if (moveCount >= 10 ) {
+                try {board.isUnderCheck(to);}
+
+                catch (RuntimeException re){
+                    System.out.println(re.getMessage() +"asdsadsa");
+                    continue;
+                }
+            }
+
+
             moveCount++;
+
 
         }
 

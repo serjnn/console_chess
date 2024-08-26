@@ -16,16 +16,9 @@ public abstract class Piece {
     }
 
 
+    public abstract boolean isMoveInvalidForThisType(Coordinates to);
 
-
-
-
-    protected abstract boolean isMoveInvalidForThisType(Coordinates to);
-
-    public List<Coordinates> everyStepToPoint(Coordinates to)
-            throws RuntimeException {
-        return null;
-    }
+    public abstract List<Coordinates> everyStepToPoint(Coordinates to);
 
     public List<Coordinates> diagonalMoveSteps(Coordinates to) {
         int fileFrom = this.coordinates.file.ordinal();
@@ -73,7 +66,7 @@ public abstract class Piece {
             return rankChanges.stream()
                     .map(rank -> new Coordinates(File.values()[fileFrom], rank)
 
-                    ).toList().subList(1,rankChanges.size() );
+                    ).toList().subList(1, rankChanges.size());
         } else {
             {
                 List<Integer> fileChanges = new ArrayList<>(IntStream.rangeClosed
@@ -95,7 +88,8 @@ public abstract class Piece {
     @Override
     public String toString() {
         return "Piece{" +
-                "color=" + color +
+                "name= " + getClass().getSimpleName() +
+                ", color=" + color +
                 ", coordinates=" + coordinates +
                 '}';
     }

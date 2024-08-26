@@ -9,17 +9,14 @@ public class Bishop extends Piece {
 
 
     @Override
-    protected boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveInvalidForThisType(Coordinates to) {
         return Math.abs(this.coordinates.file.ordinal() - to.file.ordinal())
                 != Math.abs(this.coordinates.rank - to.rank);
     }
 
 
     @Override
-    public List<Coordinates> everyStepToPoint(Coordinates to)
-            throws RuntimeException {
-        if (isMoveInvalidForThisType(to)) throw new RuntimeException(
-                "bishop does not move like that");
+    public List<Coordinates> everyStepToPoint(Coordinates to) {
         return diagonalMoveSteps(to);
     }
 

@@ -2,15 +2,18 @@ package other;
 
 import pieces.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Board {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
     private final Map<Coordinates, Piece> map = new HashMap<>();
+
+    private Set<Coordinates> whites = new HashSet<>();
+
+    private Set<Coordinates> blacks = new HashSet<>();
 
 
     public void setPiece(Coordinates coordinates, Piece piece) {
@@ -44,7 +47,7 @@ public class Board {
 
         //knights
         setPiece(new Coordinates(File.B, 1), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
-        setPiece(new Coordinates(File.G, 1), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
+        setPiece(new Coordinates(File.F, 3), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
         setPiece(new Coordinates(File.B, 8), new Knight(Color.BLACK, new Coordinates(File.B, 8)));
         setPiece(new Coordinates(File.G, 8), new Knight(Color.BLACK, new Coordinates(File.G, 8)));
 
@@ -105,14 +108,6 @@ public class Board {
         Piece piece = getPiece(from);
 
 
-        List<Coordinates> steps = null;
-        try {
-            steps = piece.everyStepToPoint(to);
-        } catch (RuntimeException re) {
-            throw new RuntimeException(ANSI_RED + re.getMessage() + ANSI_RESET);
-
-
-        }
         try {
             if (piece.getClass().getSimpleName().equals("Pawn"))
                 if (from.file != to.file && !(isItEnemy(to, Game.moveColor))
@@ -126,20 +121,22 @@ public class Board {
             throw new RuntimeException(ANSI_RED + "\"u cant move like that \" +\n" +
                     "                        \"cuz pawn is not attacking" + ANSI_RESET);
         }
-
+        List<Coordinates> steps = piece.everyStepToPoint(to);
         if (!isWayToPointEmpty(steps)) {
             throw new RuntimeException(ANSI_RED + "u cant go through piece" +
                     ANSI_RESET);
         }
 
+        throw new NumberFormatException();
+
     }
 
 
     private boolean isWayToPointEmpty(List<Coordinates> steps) {
-        steps = steps.subList(0,steps.size()-1);
+        steps = steps.subList(0, steps.size() - 1);
         for (Coordinates cords : steps) {
             if (map.containsKey(cords)) {
-                System.out.println(map.get(cords));
+                System.out.println("Ему мешает: " + map.get(cords));
                 return false;
 
             }
@@ -148,23 +145,67 @@ public class Board {
 
     }
 
-//    public void isUnderCheck(Piece lastPiece) throws RuntimeException {
-//
-//        Coordinates kingcords = lastPiece.color == Color.WHITE ?
-//                Game.blackKingCoords :
-//                Game.whiteKingCoords;
-//
-//
-//        try {isMoveValid(lastPiece.coordinates,kingcords);}
-//        catch (RuntimeException re){
-//        }
-//
-//
-//    }
 
     public boolean isSquareWhite(Coordinates coordinates) {
         return ((coordinates.file.ordinal() + 1) % 2 == 0 && coordinates.rank % 2 == 0) || (
                 (coordinates.file.ordinal() + 1) % 2 != 0 && coordinates.rank % 2 != 0
         );
+    }
+
+    public void isUnderCheck(Coordinates to) {
+
+        if (Game.moveColor == Color.WHITE) {
+            whites.add(to);
+            blacks.remove(to);
+            whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
+            for (Coordinates cords : whites) {
+
+                try {
+                    if (map.get(cords)
+                            .everyStepToPoint(Game.blackKingCoords)
+                            .getLast()
+                            .equals(Game.blackKingCoords)) {
+                        try {
+                            isMoveValid(cords, Game.blackKingCoords);
+                        } catch (NumberFormatException numberFormatException) {
+                            throw new RuntimeException(ANSI_RED + "U ARE UNDER CHECk" + ANSI_RESET);
+                        } catch (RuntimeException re) {
+                            System.out.println("something");
+                        }
+
+                    }
+                } catch (RuntimeException re) {
+                    System.out.print("");
+                }
+
+
+            }
+
+
+        } else {
+            blacks.add(to);
+            whites.remove(to);
+            blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
+            for (Coordinates cords : blacks) {
+                if (map.get(cords)
+                        .everyStepToPoint(Game.whiteKingCoords)
+                        .getLast()
+                        .equals(Game.whiteKingCoords)) {
+                    try {
+                        isMoveValid(cords, Game.whiteKingCoords);
+                    } catch (NumberFormatException numberFormatException) {
+                        throw new RuntimeException(ANSI_RED + "U ARE UNDER CHECK" + ANSI_RESET);
+                    } catch (RuntimeException re) {
+                        System.out.println("something");
+                    }
+
+
+                }
+
+            }
+//            System.out.println("whites " + whites);
+//            System.out.println("blacks " + blacks);
+        }
+
     }
 }

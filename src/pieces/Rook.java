@@ -8,15 +8,13 @@ public class Rook extends Piece {
     }
 
     @Override
-    protected boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveInvalidForThisType(Coordinates to) {
 
         return this.coordinates.file != to.file && this.coordinates.rank != to.rank;
     }
 
     @Override
-    public List<Coordinates> everyStepToPoint(Coordinates to) throws RuntimeException {
-        if (isMoveInvalidForThisType(to)) throw new RuntimeException(
-                "rook does not move like that");
+    public List<Coordinates> everyStepToPoint(Coordinates to) {
 
         return straightMoveSteps(to);
         }
