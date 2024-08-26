@@ -127,7 +127,7 @@ public class Board {
                     ANSI_RESET);
         }
 
-        throw new NumberFormatException();
+//        throw new NumberFormatException();
 
     }
 
@@ -152,60 +152,56 @@ public class Board {
         );
     }
 
-    public void isUnderCheck(Coordinates to) {
-
+    public boolean isUnderCheck(Coordinates to) {
+        boolean flag = false;
         if (Game.moveColor == Color.WHITE) {
             whites.add(to);
             blacks.remove(to);
             whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
+            System.out.println(whites.size()  +    " whites " + whites );
+            System.out.println("blacks " + blacks);
             for (Coordinates cords : whites) {
+                Piece piece = map.get(cords);
+
+                System.out.println(piece.isMoveInvalidForThisType(Game.blackKingCoords));
+                if (!piece.isMoveInvalidForThisType(Game.blackKingCoords)) flag = true;
 
                 try {
-                    if (map.get(cords)
-                            .everyStepToPoint(Game.blackKingCoords)
-                            .getLast()
-                            .equals(Game.blackKingCoords)) {
-                        try {
-                            isMoveValid(cords, Game.blackKingCoords);
-                        } catch (NumberFormatException numberFormatException) {
-                            throw new RuntimeException(ANSI_RED + "U ARE UNDER CHECk" + ANSI_RESET);
-                        } catch (RuntimeException re) {
-                            System.out.println("something");
-                        }
-
-                    }
+                    isMoveValid(cords, Game.blackKingCoords);
                 } catch (RuntimeException re) {
-                    System.out.print("");
+                    flag = false;
+
                 }
+
+
 
 
             }
 
-
+return flag;
         } else {
             blacks.add(to);
             whites.remove(to);
             blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
+
             for (Coordinates cords : blacks) {
-                if (map.get(cords)
-                        .everyStepToPoint(Game.whiteKingCoords)
-                        .getLast()
-                        .equals(Game.whiteKingCoords)) {
-                    try {
-                        isMoveValid(cords, Game.whiteKingCoords);
-                    } catch (NumberFormatException numberFormatException) {
-                        throw new RuntimeException(ANSI_RED + "U ARE UNDER CHECK" + ANSI_RESET);
-                    } catch (RuntimeException re) {
-                        System.out.println("something");
-                    }
+                Piece piece = map.get(cords);
+                if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) flag = true;
+
+                try {
+                    isMoveValid(cords, Game.whiteKingCoords);
+                } catch (RuntimeException re) {
+                    flag = false;
+                }
 
 
                 }
 
+
             }
-//            System.out.println("whites " + whites);
-//            System.out.println("blacks " + blacks);
+
+
+return flag;
         }
 
     }
-}

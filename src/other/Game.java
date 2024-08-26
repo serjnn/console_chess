@@ -57,9 +57,9 @@ public class Game {
             try {
                 board.isMoveValid(from, to);
             }
-            catch (NumberFormatException ne) {
-                System.out.print("");
-            }
+//            catch (NumberFormatException ne) {
+//                System.out.print("");
+//            }
             catch (RuntimeException re) {
                 System.out.println(re.getMessage());
                 continue;
@@ -78,14 +78,10 @@ public class Game {
             board.removePieceFromSquare(from);
             board.setPiece(to, piece);
 
-            if (moveCount >= 10 ) {
-                try {board.isUnderCheck(to);}
-
-                catch (RuntimeException re){
-                    System.out.println(re.getMessage() +"asdsadsa");
-                    continue;
-                }
+            if ( board.isUnderCheck(to)){
+                System.out.println(Board.ANSI_RED + "U ARE BEING UNDER CHECK" + Board.ANSI_RESET);
             }
+
 
 
             moveCount++;
