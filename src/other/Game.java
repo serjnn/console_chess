@@ -7,7 +7,12 @@ import pieces.Piece;
 
 import java.util.Scanner;
 
+
+
 public class Game {
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
 
     public static Coordinates whiteKingCoords;
     public static Coordinates blackKingCoords;
@@ -17,19 +22,25 @@ public class Game {
         blackKingCoords = new Coordinates(File.E, 6);
     }
 
-    public static short moveCount = 0;
-    public static Color moveColor;
-
-
+    public static int moveCount= -1 ;
+    public static Color moveColor = Color.WHITE;
+    public static boolean underCheck;
+    public static boolean checkRelease = false;
 
 
     public void gameLoop(Board board) {
 
 
         while (true) {
+            System.out.println(board.isUnderCheck() + "---------------------");
+
+            if ( board.isUnderCheck()){
+
+                checkRelease = true;
+            }
 
 
-            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+
             BoardConsoleView view = new BoardConsoleView();
             view.render(board);
             Scanner scanner = new Scanner(System.in);
@@ -44,14 +55,19 @@ public class Game {
                     .valueOf((move.charAt(3) + "")
                             .toUpperCase())
                     , Character.getNumericValue(move.charAt(4)));
+
             Piece piece = board.getPiece(from);
 
-        if (piece.isMoveInvalidForThisType(to)){
-            System.out.println(Board.ANSI_RED + piece.getClass().getSimpleName() +
-                    " can't move like that" + Board.ANSI_RESET);
-            continue;
-        }
-
+            try {
+                if (piece.isMoveInvalidForThisType(to)){
+                    System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
+                            " can't move like that" + ANSI_RESET);
+                    continue;
+                }
+            } catch (NullPointerException ne) {
+                System.out.println(ANSI_RED + "there is empty from where u wanna move" + ANSI_RESET);
+                continue;
+            }
 
 
             try {
@@ -61,7 +77,7 @@ public class Game {
 //                System.out.print("");
 //            }
             catch (RuntimeException re) {
-                System.out.println(re.getMessage());
+                System.out.println(ANSI_RED +  re.getMessage() + ANSI_RESET);
                 continue;
 
             }
@@ -78,13 +94,32 @@ public class Game {
             board.removePieceFromSquare(from);
             board.setPiece(to, piece);
 
-            if ( board.isUnderCheck(to)){
-                System.out.println(Board.ANSI_RED + "U ARE BEING UNDER CHECK" + Board.ANSI_RESET);
+            if (checkRelease){
+                System.out.println(ANSI_RED + "CHECK RELEASE WORKED" + ANSI_RESET);
+                if (board.isUnderCheck()) {
+                    System.out.println(ANSI_RED + "U ARE UNDER CHECK" + ANSI_RESET);
+                    board.setPiece(from,piece); // move cancel
+                    board.removePieceFromSquare(to);
+
+                    continue;
+                }
+                else {checkRelease = false;}
             }
 
+            board.addToActive(to);
+            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+
+            moveCount ++;
+
+            System.out.println(moveCount + " move countttt");
+            System.out.println(moveColor);
+            System.out.println(checkRelease + " checkRelease");
 
 
-            moveCount++;
+
+
+
+
 
 
         }

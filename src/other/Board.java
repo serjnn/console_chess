@@ -6,8 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Board {
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
+
 
     private final Map<Coordinates, Piece> map = new HashMap<>();
 
@@ -85,24 +84,24 @@ public class Board {
             RuntimeException {
         try {
             if (getPieceColor(from) != Game.moveColor) {
-                throw new RuntimeException(ANSI_RED + "that piece isn't yours" + ANSI_RESET);
+                throw new RuntimeException("that piece isn't yours");
 
             }
         } catch (NullPointerException np) {
-            throw new RuntimeException(ANSI_RED + "there is empty from where u wanna move"
-                    + ANSI_RESET);
+            throw new RuntimeException("there is empty from where u wanna move"
+            );
 
         }
 
         if (!isSquareEmpty(to) && !isItEnemy(to, Game.moveColor)) {
 
-            throw new RuntimeException(ANSI_RED + "u cant beat ur pieces" + ANSI_RESET);
+            throw new RuntimeException("u cant beat ur pieces");
 
         }
 
 
         if (to.rank < 1 || to.rank > 8) {
-            throw new RuntimeException(ANSI_RED + "u cant go outside the map" + ANSI_RESET);
+            throw new RuntimeException("u cant go outside the map");
 
         }
         Piece piece = getPiece(from);
@@ -112,19 +111,16 @@ public class Board {
             if (piece.getClass().getSimpleName().equals("Pawn"))
                 if (from.file != to.file && !(isItEnemy(to, Game.moveColor))
                         || from.file == to.file && !isSquareEmpty(to)) {
-                    throw new RuntimeException(ANSI_RED + "this pawn cant move that way" +
-                            ANSI_RESET);
+                    throw new RuntimeException("this pawn cant move that way");
 
 
                 }
         } catch (NullPointerException np) {
-            throw new RuntimeException(ANSI_RED + "\"u cant move like that \" +\n" +
-                    "                        \"cuz pawn is not attacking" + ANSI_RESET);
+            throw new RuntimeException("u cant move like that cuz pawn is not attacking");
         }
         List<Coordinates> steps = piece.everyStepToPoint(to);
         if (!isWayToPointEmpty(steps)) {
-            throw new RuntimeException(ANSI_RED + "u cant go through piece" +
-                    ANSI_RESET);
+            throw new RuntimeException("u cant go through piece" );
         }
 
 //        throw new NumberFormatException();
@@ -136,7 +132,6 @@ public class Board {
         steps = steps.subList(0, steps.size() - 1);
         for (Coordinates cords : steps) {
             if (map.containsKey(cords)) {
-                System.out.println("Ему мешает: " + map.get(cords));
                 return false;
 
             }
@@ -152,38 +147,46 @@ public class Board {
         );
     }
 
-    public boolean isUnderCheck(Coordinates to) {
-        boolean flag = false;
+    public void addToActive(Coordinates to) {
         if (Game.moveColor == Color.WHITE) {
             whites.add(to);
             blacks.remove(to);
             whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
-            System.out.println(whites.size()  +    " whites " + whites );
-            System.out.println("blacks " + blacks);
+
+        }
+        else {
+            blacks.add(to);
+            whites.remove(to);
+            blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
+        }
+        System.out.println(whites.size() + " whites " + whites);
+        System.out.println("blacks " + blacks);
+    }
+
+    public boolean isUnderCheck() {
+        boolean flag = false;
+        if (Game.moveColor == Color.BLACK) {
+            System.out.println("whiteeeeeeeeeeeeeeeeeeeeeeee");
+
             for (Coordinates cords : whites) {
+                System.out.println(cords + " cooooords");
                 Piece piece = map.get(cords);
-
-                System.out.println(piece.isMoveInvalidForThisType(Game.blackKingCoords));
                 if (!piece.isMoveInvalidForThisType(Game.blackKingCoords)) flag = true;
-
                 try {
+                    Game.moveColor = Color.WHITE;
                     isMoveValid(cords, Game.blackKingCoords);
+                    Game.moveColor = Color.BLACK;
                 } catch (RuntimeException re) {
+                    System.out.println(re.getMessage());
                     flag = false;
-
                 }
 
 
 
-
             }
-
-return flag;
+            return flag;
         } else {
-            blacks.add(to);
-            whites.remove(to);
-            blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
-
+            System.out.println("blackkkkkkkkkkkkkkkk");
             for (Coordinates cords : blacks) {
                 Piece piece = map.get(cords);
                 if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) flag = true;
@@ -195,13 +198,11 @@ return flag;
                 }
 
 
-                }
-
-
             }
 
 
-return flag;
+            return flag;
         }
-
     }
+
+}

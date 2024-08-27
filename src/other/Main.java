@@ -11,7 +11,25 @@ public class Main {
 
 
 
+        /*
+выводится доска
 
+читаются координаты
+
+вычисляется цвет хода
+
+идут проверки
+
+ board.removePieceFromSquare(from);
+            board.setPiece(to, piece);
+            board.addToActive(to);
+
+movecount++
+
+проверка на шах
+
+ставится или не ставится checkRelease
+         */
 
         Board board = new Board();
         board.setupDefault();

@@ -5,11 +5,14 @@ import pieces.Coordinates;
 import pieces.File;
 import pieces.Piece;
 
+import static other.Game.ANSI_RESET;
+
 public class BoardConsoleView {
     public static final String ANSI_WHITE_SQUARE_BACKGROUND = "\u001B[42m";
     public static final String ANSI_BLACK_SQUARE_BACKGROUND = "\u001B[41m";
     public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RESET = "\u001B[0m";
+
+
     private static final String WHITE_BACK = ANSI_WHITE_SQUARE_BACKGROUND + "   " + ANSI_RESET;
     public static final String BLACK_BACK = ANSI_BLACK_SQUARE_BACKGROUND + "   " + ANSI_RESET;
 
@@ -45,7 +48,7 @@ public class BoardConsoleView {
         System.out.print("  ");
         for (File file : File.values()) System.out.print(" " + file + " ");
         System.out.println();
-        System.out.println(Game.moveCount % 2 == 0 ? "White's turn" : "Black's turn");
+        System.out.println(Game.moveColor.toString() + "' turn");
     }
 
 

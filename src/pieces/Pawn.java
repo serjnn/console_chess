@@ -23,7 +23,7 @@ public class Pawn extends Piece {
         boolean fileCheck = fileFrom - 1 == fileTo ||
                 fileFrom + 1 == fileTo ||
                 fileFrom == fileTo;
-    int possiblePawnDistanceMove = Game.moveCount < 2 ? 2 : 1;
+    int possiblePawnDistanceMove = Game.moveCount < 3 ? 2 : 1;
 
     boolean rankCheck = color == Color.WHITE ? (rankTo == rankFrom +
             possiblePawnDistanceMove || rankTo == rankFrom + 1) :
