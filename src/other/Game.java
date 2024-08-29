@@ -22,23 +22,38 @@ public class Game {
         blackKingCoords = new Coordinates(File.E, 6);
     }
 
-    public static int moveCount= -1 ;
+    public static int moveCount= 0 ;
     public static Color moveColor = Color.WHITE;
     public static boolean underCheck;
     public static boolean checkRelease = false;
+    private boolean selfCheck;
+    private Coordinates prevWhiteKingCoords;
+    private Coordinates prevBlackKingCoords;
+
+    /*
+    if (Color) isUnderCheckk result == крайний moveColor {dont change move color}
+
+    или
+
+    make some check that determines if this move wont be reason of check
+
+    првоерка на то объявляется ли после своего же хожа шах, если да, то такой ход невозможен
+
+
+     */
 
 
     public void gameLoop(Board board) {
 
 
         while (true) {
-            System.out.println(board.isUnderCheck() + "---------------------");
-
-            if ( board.isUnderCheck()){
-
+            if ( board.isBlackKingUnderCheck() || board.isWhiteKingUnderCheck()){
                 checkRelease = true;
             }
 
+
+             moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+            System.out.println();
 
 
             BoardConsoleView view = new BoardConsoleView();
@@ -85,35 +100,45 @@ public class Game {
             // tracking king's coords
             if (piece.getClass().getSimpleName().equals("King")) {
                 if (moveColor == Color.WHITE) {
+                    prevWhiteKingCoords = whiteKingCoords;
                     whiteKingCoords = to;
+
+
                 } else {
+                    prevBlackKingCoords = blackKingCoords;
                     blackKingCoords = to;
+
                 }
 
             }
+
+//            if (moveColor == Color.WHITE && )
+
+
+
+
+
             board.removePieceFromSquare(from);
             board.setPiece(to, piece);
-
             if (checkRelease){
-                System.out.println(ANSI_RED + "CHECK RELEASE WORKED" + ANSI_RESET);
-                if (board.isUnderCheck()) {
+                if (board.isWhiteKingUnderCheck() || board.isBlackKingUnderCheck()) {
                     System.out.println(ANSI_RED + "U ARE UNDER CHECK" + ANSI_RESET);
                     board.setPiece(from,piece); // move cancel
                     board.removePieceFromSquare(to);
+                    blackKingCoords = prevBlackKingCoords;
+                    whiteKingCoords = prevWhiteKingCoords;
 
                     continue;
                 }
-                else {checkRelease = false;}
+                else {checkRelease = false;
+                selfCheck = false;}
             }
 
             board.addToActive(to);
-            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
-
             moveCount ++;
 
-            System.out.println(moveCount + " move countttt");
-            System.out.println(moveColor);
-            System.out.println(checkRelease + " checkRelease");
+
+
 
 
 

@@ -5,6 +5,8 @@ import pieces.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static other.Game.blackKingCoords;
+
 public class Board {
 
 
@@ -84,7 +86,7 @@ public class Board {
             RuntimeException {
         try {
             if (getPieceColor(from) != Game.moveColor) {
-                throw new RuntimeException("that piece isn't yours");
+                throw new ArithmeticException("that piece isn't yours");
 
             }
         } catch (NullPointerException np) {
@@ -120,7 +122,7 @@ public class Board {
         }
         List<Coordinates> steps = piece.everyStepToPoint(to);
         if (!isWayToPointEmpty(steps)) {
-            throw new RuntimeException("u cant go through piece" );
+            throw new RuntimeException("u cant go through piece");
         }
 
 //        throw new NumberFormatException();
@@ -151,58 +153,111 @@ public class Board {
         if (Game.moveColor == Color.WHITE) {
             whites.add(to);
             blacks.remove(to);
-            whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
 
-        }
-        else {
+        } else {
             blacks.add(to);
             whites.remove(to);
-            blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
         }
-        System.out.println(whites.size() + " whites " + whites);
-        System.out.println("blacks " + blacks);
+
     }
+
+
+    public boolean isWhiteKingUnderCheck(){
+
+        boolean flag = false;
+        blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
+        System.out.println("blacks: " + blacks);
+        for (Coordinates cords : blacks) {
+            Piece piece = map.get(cords);
+            if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) flag  = true;
+
+            try {
+                isMoveValid(cords, Game.whiteKingCoords);
+            } catch (ArithmeticException ae) {
+                System.out.print("");
+            } catch (RuntimeException re) {
+                flag = false;
+            }
+
+
+        }
+        return flag;
+    }
+    public boolean isBlackKingUnderCheck(){
+        boolean flag = false;
+        whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
+
+//        Coordinates blackKingCoords = map.entrySet().stream().filter(entry ->
+//                entry
+//                        .getValue()
+//
+//                        .getClass()
+//                        .getSimpleName()
+//                        .equals("King"))
+//                .filter(en -> en.getValue().color==Color.WHITE  ).coor
+        for (Coordinates cords : whites) {
+            System.out.println("whites: " + whites);
+            Piece piece = map.get(cords);
+            if (!piece.isMoveInvalidForThisType(blackKingCoords)) flag = true;
+            try {
+
+                isMoveValid(cords, blackKingCoords);
+
+            } catch (ArithmeticException ae) {
+                System.out.print("");
+            } catch (RuntimeException re) {
+                System.out.println("The problem is " + re.getMessage());
+                flag = false;
+            }
+
+
+        }
+        return flag;
+
+    }
+
 
     public boolean isUnderCheck() {
-        boolean flag = false;
-        if (Game.moveColor == Color.BLACK) {
-            System.out.println("whiteeeeeeeeeeeeeeeeeeeeeeee");
+        boolean whiteFlag = false, blackFlag = false;
+        whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
 
-            for (Coordinates cords : whites) {
-                System.out.println(cords + " cooooords");
-                Piece piece = map.get(cords);
-                if (!piece.isMoveInvalidForThisType(Game.blackKingCoords)) flag = true;
-                try {
-                    Game.moveColor = Color.WHITE;
-                    isMoveValid(cords, Game.blackKingCoords);
-                    Game.moveColor = Color.BLACK;
-                } catch (RuntimeException re) {
-                    System.out.println(re.getMessage());
-                    flag = false;
-                }
+        for (Coordinates cords : whites) {
+            Piece piece = map.get(cords);
+            if (!piece.isMoveInvalidForThisType(blackKingCoords)) whiteFlag = true;
+            try {
 
+                isMoveValid(cords, blackKingCoords);
 
-
-            }
-            return flag;
-        } else {
-            System.out.println("blackkkkkkkkkkkkkkkk");
-            for (Coordinates cords : blacks) {
-                Piece piece = map.get(cords);
-                if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) flag = true;
-
-                try {
-                    isMoveValid(cords, Game.whiteKingCoords);
-                } catch (RuntimeException re) {
-                    flag = false;
-                }
-
-
+            } catch (ArithmeticException ae) {
+                System.out.print("");
+            } catch (RuntimeException re) {
+                System.out.println("The problem is " + re.getMessage());
+                whiteFlag = false;
             }
 
 
-            return flag;
         }
+
+        blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
+
+        for (Coordinates cords : blacks) {
+            Piece piece = map.get(cords);
+            if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) blackFlag = true;
+
+            try {
+                isMoveValid(cords, Game.whiteKingCoords);
+            } catch (ArithmeticException ae) {
+                System.out.print("");
+            } catch (RuntimeException re) {
+                blackFlag = false;
+            }
+
+
+        }
+
+
+        return whiteFlag || blackFlag;
     }
+
 
 }
