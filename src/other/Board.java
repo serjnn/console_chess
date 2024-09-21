@@ -17,6 +17,14 @@ public class Board {
     private Set<Coordinates> blacks = new HashSet<>();
 
 
+    public Set<Coordinates> getWhites() {
+        return whites;
+    }
+
+    public Set<Coordinates> getBlacks() {
+        return blacks;
+    }
+
     public void setPiece(Coordinates coordinates, Piece piece) {
         piece.coordinates = coordinates;
         map.put(coordinates, piece);
@@ -166,7 +174,7 @@ public class Board {
 
         boolean flag = false;
         blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
-        System.out.println("blacks: " + blacks);
+//        System.out.println("blacks: " + blacks);
         for (Coordinates cords : blacks) {
             Piece piece = map.get(cords);
             if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) flag  = true;
@@ -176,6 +184,7 @@ public class Board {
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {
+                System.out.println("The problem putting white in check is " + re.getMessage());
                 flag = false;
             }
 
@@ -187,16 +196,8 @@ public class Board {
         boolean flag = false;
         whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
 
-//        Coordinates blackKingCoords = map.entrySet().stream().filter(entry ->
-//                entry
-//                        .getValue()
-//
-//                        .getClass()
-//                        .getSimpleName()
-//                        .equals("King"))
-//                .filter(en -> en.getValue().color==Color.WHITE  ).coor
         for (Coordinates cords : whites) {
-            System.out.println("whites: " + whites);
+//            System.out.println("whites: " + whites);
             Piece piece = map.get(cords);
             if (!piece.isMoveInvalidForThisType(blackKingCoords)) flag = true;
             try {
@@ -206,7 +207,7 @@ public class Board {
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {
-                System.out.println("The problem is " + re.getMessage());
+                System.out.println("The problem putting black in check is " + re.getMessage());
                 flag = false;
             }
 
@@ -260,4 +261,10 @@ public class Board {
     }
 
 
+    public boolean didIPutMyselfInCheck() {
+        return Game.moveColor == Color.WHITE ?
+                this.isWhiteKingUnderCheck()
+                : this.isBlackKingUnderCheck();
+
+    }
 }

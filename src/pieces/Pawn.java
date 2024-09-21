@@ -1,7 +1,5 @@
 package pieces;
 
-import other.Game;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +18,15 @@ public class Pawn extends Piece {
                 rankTo = to.rank;
         Color color = this.color;
 
-        boolean fileCheck = fileFrom - 1 == fileTo ||
-                fileFrom + 1 == fileTo ||
-                fileFrom == fileTo;
-    int possiblePawnDistanceMove = Game.moveCount < 2 ? 2 : 1;
+        Boolean fileCheck = fileTo == fileFrom - 1 ||
+                fileTo == fileFrom +1;
 
-    boolean rankCheck = color == Color.WHITE ? (rankTo == rankFrom +
-            possiblePawnDistanceMove || rankTo == rankFrom + 1) :
-            (rankTo == rankFrom - possiblePawnDistanceMove || rankTo == rankFrom
-                    - 1);
-        return!(fileCheck &&rankCheck);
+        Boolean rankCheck =
+                color == Color.WHITE ?
+                        rankTo == rankFrom + 1 :
+                        rankTo == rankFrom -1;
+        return !(fileCheck && rankCheck);
+
 }
 
 
@@ -37,8 +34,10 @@ public class Pawn extends Piece {
 @Override
 
 public List<Coordinates> everyStepToPoint(Coordinates to)  {
+
     return new ArrayList<>(List.of(to));
 }
+
 
 
 }

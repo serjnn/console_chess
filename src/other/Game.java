@@ -8,7 +8,6 @@ import pieces.Piece;
 import java.util.Scanner;
 
 
-
 public class Game {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
@@ -22,37 +21,25 @@ public class Game {
         blackKingCoords = new Coordinates(File.E, 6);
     }
 
-    public static int moveCount= 0 ;
+    public static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
     public static boolean underCheck;
     public static boolean checkRelease = false;
-    private boolean selfCheck;
+    private boolean movePermisson;
     private Coordinates prevWhiteKingCoords;
     private Coordinates prevBlackKingCoords;
-
-    /*
-    if (Color) isUnderCheckk result == крайний moveColor {dont change move color}
-
-    или
-
-    make some check that determines if this move wont be reason of check
-
-    првоерка на то объявляется ли после своего же хожа шах, если да, то такой ход невозможен
-
-
-     */
 
 
     public void gameLoop(Board board) {
 
 
         while (true) {
-            if ( board.isBlackKingUnderCheck() || board.isWhiteKingUnderCheck()){
+            if (board.isBlackKingUnderCheck() || board.isWhiteKingUnderCheck()) {
                 checkRelease = true;
             }
 
-
-             moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+            /// проврка на шах, если есть то уменьшаем move count на 1
+            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
             System.out.println();
 
 
@@ -62,19 +49,34 @@ public class Game {
 
 
             String move = scanner.nextLine();
-            Coordinates from = new Coordinates(File
-                    .valueOf((move.charAt(0) + "")
-                            .toUpperCase())
-                    , Character.getNumericValue(move.charAt(1)));
-            Coordinates to = new Coordinates(File
-                    .valueOf((move.charAt(3) + "")
-                            .toUpperCase())
-                    , Character.getNumericValue(move.charAt(4)));
+
+            Coordinates from = null;
+            Coordinates to = null;
+            try {
+                from = new Coordinates(File
+                        .valueOf((move.charAt(0) + "")
+                                .toUpperCase())
+                        , Character.getNumericValue(move.charAt(1)));
+                to = new Coordinates(File
+                        .valueOf((move.charAt(3) + "")
+                                .toUpperCase())
+                        , Character.getNumericValue(move.charAt(4)));
+            } catch (IllegalArgumentException e) {
+                System.out.println(ANSI_RED + "Please enter correct coords" + ANSI_RESET);
+                continue;
+            }
 
             Piece piece = board.getPiece(from);
 
+            if (piece.getClass().getSimpleName().equals("Pawn")
+            && board.isSquareEmpty(to) && this.canPawnRotate(piece,to)
+            ) {
+        movePermisson = true;
+            }
+
+            // first check
             try {
-                if (piece.isMoveInvalidForThisType(to)){
+                if (!movePermisson &&  piece.isMoveInvalidForThisType(to)) {
                     System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
                             " can't move like that" + ANSI_RESET);
                     continue;
@@ -84,20 +86,29 @@ public class Game {
                 continue;
             }
 
-
+            // second check
             try {
                 board.isMoveValid(from, to);
-            }
-//            catch (NumberFormatException ne) {
-//                System.out.print("");
-//            }
-            catch (RuntimeException re) {
-                System.out.println(ANSI_RED +  re.getMessage() + ANSI_RESET);
+            } catch (RuntimeException re) {
+                System.out.println(ANSI_RED + re.getMessage() + ANSI_RESET);
                 continue;
 
             }
 
-            // tracking king's coords
+            System.out.println(board.getWhites());
+            System.out.println(board.getBlacks());
+            System.out.println(board.isWhiteKingUnderCheck() + " white");
+            System.out.println(board.isBlackKingUnderCheck() + " black");
+
+
+
+            if (board.didIPutMyselfInCheck()) {
+                System.out.println(ANSI_RED + "Mind ur king, trash" + ANSI_RESET);
+                continue;
+            }
+
+
+            // fourth check
             if (piece.getClass().getSimpleName().equals("King")) {
                 if (moveColor == Color.WHITE) {
                     prevWhiteKingCoords = whiteKingCoords;
@@ -112,42 +123,60 @@ public class Game {
 
             }
 
-//            if (moveColor == Color.WHITE && )
 
-
-
-
+            // COMMIT MOVE
 
             board.removePieceFromSquare(from);
             board.setPiece(to, piece);
-            if (checkRelease){
-                if (board.isWhiteKingUnderCheck() || board.isBlackKingUnderCheck()) {
-                    System.out.println(ANSI_RED + "U ARE UNDER CHECK" + ANSI_RESET);
-                    board.setPiece(from,piece); // move cancel
-                    board.removePieceFromSquare(to);
-                    blackKingCoords = prevBlackKingCoords;
-                    whiteKingCoords = prevWhiteKingCoords;
 
-                    continue;
-                }
-                else {checkRelease = false;
-                selfCheck = false;}
-            }
+
+//            if (checkRelease){
+//                if (board.isWhiteKingUnderCheck() || board.isBlackKingUnderCheck()) {
+//                    System.out.println(ANSI_RED + "U ARE UNDER CHECK" + ANSI_RESET);
+//                    board.setPiece(from,piece); // move cancel
+//                    board.removePieceFromSquare(to);
+//                    blackKingCoords = prevBlackKingCoords;
+//                    whiteKingCoords = prevWhiteKingCoords;
+//
+//                    continue;
+//                }
+//                else {checkRelease = false;
+//                selfCheck = false;}
+//            }
 
             board.addToActive(to);
-            moveCount ++;
+            movePermisson = false;
+            System.out.println(board.getWhites());
+            System.out.println(board.getBlacks());
+            // проверка на шах
 
-
-
-
-
-
-
-
-
+            moveCount++;
 
 
         }
+
+
+    }
+
+    private boolean canPawnRotate(Piece piece, Coordinates to) {
+        int possibleDistance = moveCount < 2 ? 2:1;
+
+        int fileFrom = piece.coordinates.file.ordinal(),
+                fileTo = to.file.ordinal(),
+                rankFrom = piece.coordinates.rank,
+                rankTo = to.rank;
+        Color color = piece.color;
+
+        boolean fileCheck = fileTo == fileFrom;
+        boolean rankCheck = color == Color.WHITE ?
+                rankTo == rankFrom + possibleDistance  ||
+                        rankTo == rankFrom + 1 :
+                rankTo == rankFrom - possibleDistance
+                ||                rankTo == rankFrom - 1
+
+                ;
+
+        return fileCheck && rankCheck;
 
 
     }
