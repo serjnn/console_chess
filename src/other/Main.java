@@ -31,10 +31,22 @@ movecount++
 ставится или не ставится checkRelease
          */
 
+        //
+//
+//
+
+//
+//        Bishop bishop = new Bishop(Color.BLACK,new Coordinates(File.H,8));
+//        List<Coordinates> list2 =
+//                (bishop.everyStepToPoint(new Coordinates(File.A,1 )));
+//        System.out.println(list2);
+
+
         Board board = new Board();
         board.setupDefault();
         Game game = new Game();
         game.gameLoop(board);
+//
 
 //        Pawn pawn = new Pawn(Color.BLACK,new Coordinates(File.A,2));
 //        List<Coordinates> list =
@@ -68,20 +80,12 @@ movecount++
 //        }
 
 
-//
-//
-//
 
-//
-//        Bishop bishop = new Bishop(Color.BLACK,new Coordinates(File.F,6));
-//        List<Coordinates> list2 =
-//                (bishop.everyStepToPoint(bishop,new Coordinates(File.C,3)));
-//        System.out.println("BISHOP:");
-////        for (Coordinates c : list2) {
-////            System.out.print(c.file);
-////            System.out.print(c.rank);
-////            System.out.println();
-////        }
+        //        for (Coordinates c : list2) {
+//            System.out.print(c.file);
+//            System.out.print(c.rank);
+//            System.out.println();
+//        }
 
 //        System.out.println("QUEEN:");
 //        for (Coordinates c : list3) {

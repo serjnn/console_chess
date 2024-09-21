@@ -52,13 +52,13 @@ public class Board {
         setPiece(new Coordinates(File.A, 1), new Rook(Color.WHITE, new Coordinates(File.A, 1)));
         setPiece(new Coordinates(File.H, 1), new Rook(Color.WHITE, new Coordinates(File.H, 1)));
         setPiece(new Coordinates(File.A, 8), new Rook(Color.BLACK, new Coordinates(File.A, 8)));
-        setPiece(new Coordinates(File.H, 8), new Rook(Color.BLACK, new Coordinates(File.H, 8)));
+        setPiece(new Coordinates(File.D, 6), new Rook(Color.BLACK, new Coordinates(File.H, 8)));
 
         //knights
         setPiece(new Coordinates(File.B, 1), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
-        setPiece(new Coordinates(File.F, 3), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
+        setPiece(new Coordinates(File.F, 1), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
         setPiece(new Coordinates(File.B, 8), new Knight(Color.BLACK, new Coordinates(File.B, 8)));
-        setPiece(new Coordinates(File.G, 8), new Knight(Color.BLACK, new Coordinates(File.G, 8)));
+        setPiece(new Coordinates(File.E, 5), new Knight(Color.BLACK, new Coordinates(File.G, 8)));
 
         //bishops
         setPiece(new Coordinates(File.C, 1), new Bishop(Color.WHITE, new Coordinates(File.C, 1)));
@@ -90,22 +90,18 @@ public class Board {
 
     }
 
-    public void isMoveValid(Coordinates from, Coordinates to) throws
+    public void isMoveValidOnBoard(Coordinates from, Coordinates to) throws
             RuntimeException {
-        try {
-            if (getPieceColor(from) != Game.moveColor) {
-                throw new ArithmeticException("that piece isn't yours");
-
-            }
-        } catch (NullPointerException np) {
-            throw new RuntimeException("there is empty from where u wanna move"
-            );
-
+        Piece piece = map.get(from);
+        List<Coordinates> steps = piece.everyStepToPoint(to);
+        if (!isWayToPointEmpty(steps)) {
+            throw new RuntimeException("u cant go through piece");
         }
+
 
         if (!isSquareEmpty(to) && !isItEnemy(to, Game.moveColor)) {
 
-            throw new RuntimeException("u cant beat ur pieces");
+            throw new ArithmeticException("u cant beat ur pieces");
 
         }
 
@@ -114,7 +110,7 @@ public class Board {
             throw new RuntimeException("u cant go outside the map");
 
         }
-        Piece piece = getPiece(from);
+
 
 
         try {
@@ -128,12 +124,18 @@ public class Board {
         } catch (NullPointerException np) {
             throw new RuntimeException("u cant move like that cuz pawn is not attacking");
         }
-        List<Coordinates> steps = piece.everyStepToPoint(to);
-        if (!isWayToPointEmpty(steps)) {
-            throw new RuntimeException("u cant go through piece");
+
+        try {
+            if (getPieceColor(from) != Game.moveColor) {
+                throw new ArithmeticException("that piece isn't yours");
+
+            }
+        } catch (NullPointerException np) {
+            throw new RuntimeException("there is empty from where u wanna move"
+            );
+
         }
 
-//        throw new NumberFormatException();
 
     }
 
@@ -142,6 +144,7 @@ public class Board {
         steps = steps.subList(0, steps.size() - 1);
         for (Coordinates cords : steps) {
             if (map.containsKey(cords)) {
+                System.out.println("The obstacle is " + map.get(cords));
                 return false;
 
             }
@@ -170,101 +173,80 @@ public class Board {
     }
 
 
-    public boolean isWhiteKingUnderCheck(){
+    public boolean isWhiteKingUnderCheck() {
 
-        boolean flag = false;
+        boolean typeFlag = false, boardFlag = true;
+
         blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
-//        System.out.println("blacks: " + blacks);
         for (Coordinates cords : blacks) {
             Piece piece = map.get(cords);
-            if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) flag  = true;
+            if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) {
+                typeFlag = true;
+            }
 
             try {
-                isMoveValid(cords, Game.whiteKingCoords);
+                isMoveValidOnBoard(cords, Game.whiteKingCoords);
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {
                 System.out.println("The problem putting white in check is " + re.getMessage());
-                flag = false;
+                boardFlag = false;
             }
 
-
+            if (boardFlag && typeFlag) {
+                return true;
+            }
         }
-        return flag;
+        return false;
     }
-    public boolean isBlackKingUnderCheck(){
-        boolean flag = false;
+
+    public boolean isBlackKingUnderCheck() {
         whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
-
         for (Coordinates cords : whites) {
-//            System.out.println("whites: " + whites);
+            boolean typeFlag = false, boardFlag = true;
+
             Piece piece = map.get(cords);
-            if (!piece.isMoveInvalidForThisType(blackKingCoords)) flag = true;
+            if (!piece.isMoveInvalidForThisType(blackKingCoords)) {
+                typeFlag = true;
+            }
             try {
-
-                isMoveValid(cords, blackKingCoords);
-
+                isMoveValidOnBoard(cords, blackKingCoords);
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {
                 System.out.println("The problem putting black in check is " + re.getMessage());
-                flag = false;
+                boardFlag = false;
             }
-
-
+            System.out.println(piece);
+            System.out.println(piece.everyStepToPoint(blackKingCoords));
+            System.out.println(typeFlag + "  type");
+            System.out.println(boardFlag + "  board");
+            if (boardFlag && typeFlag) {
+                return true;
+            }
         }
-        return flag;
+        return false;
 
     }
 
 
-    public boolean isUnderCheck() {
-        boolean whiteFlag = false, blackFlag = false;
-        whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
-
-        for (Coordinates cords : whites) {
-            Piece piece = map.get(cords);
-            if (!piece.isMoveInvalidForThisType(blackKingCoords)) whiteFlag = true;
-            try {
-
-                isMoveValid(cords, blackKingCoords);
-
-            } catch (ArithmeticException ae) {
-                System.out.print("");
-            } catch (RuntimeException re) {
-                System.out.println("The problem is " + re.getMessage());
-                whiteFlag = false;
-            }
+    public boolean didIPutMyselfInCheck(Piece piece, Coordinates from, Coordinates to) {
+        Piece standedPiece = map.get(to);
 
 
+        map.remove(from);
+        setPiece(to, piece);
+
+
+        boolean result = Game.moveColor == Color.WHITE ?
+                isWhiteKingUnderCheck() : isBlackKingUnderCheck();
+
+        map.remove(to);
+        setPiece(from, piece);
+        if (standedPiece != null) {
+            setPiece(to, standedPiece);
         }
-
-        blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
-
-        for (Coordinates cords : blacks) {
-            Piece piece = map.get(cords);
-            if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) blackFlag = true;
-
-            try {
-                isMoveValid(cords, Game.whiteKingCoords);
-            } catch (ArithmeticException ae) {
-                System.out.print("");
-            } catch (RuntimeException re) {
-                blackFlag = false;
-            }
-
-
-        }
-
-
-        return whiteFlag || blackFlag;
-    }
-
-
-    public boolean didIPutMyselfInCheck() {
-        return Game.moveColor == Color.WHITE ?
-                this.isWhiteKingUnderCheck()
-                : this.isBlackKingUnderCheck();
+        return result;
 
     }
 }

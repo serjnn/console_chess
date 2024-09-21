@@ -21,10 +21,10 @@ public abstract class Piece {
     public abstract List<Coordinates> everyStepToPoint(Coordinates to);
 
     public List<Coordinates> diagonalMoveSteps(Coordinates to) {
-        int fileFrom = this.coordinates.file.ordinal();
-        int fileTo = to.file.ordinal();
-        int rankFrom = this.coordinates.rank;
-        int rankTo = to.rank;
+        int fileFrom = this.coordinates.file.ordinal(),
+                fileTo = to.file.ordinal(),
+                rankFrom = this.coordinates.rank,
+                rankTo = to.rank;
 
         List<Integer> rankChanges = new ArrayList<>(IntStream.rangeClosed
                         (Math.min(rankFrom, rankTo), Math.max(rankTo, rankFrom))
@@ -34,11 +34,16 @@ public abstract class Piece {
                         (Math.min(fileFrom, fileTo), Math.max(fileTo, fileFrom))//
                 .boxed().toList());
 
+
+        if (fileFrom > fileTo) {
+
+            Collections.reverse(fileChanges);
+        }
         if (rankFrom > rankTo) {
             Collections.reverse(rankChanges);
-            Collections.reverse(fileChanges);
-
         }
+        System.out.println(rankChanges + "    rank");
+        System.out.println(fileChanges + "    file");
         List<Coordinates> steps = new ArrayList<>();
         for (int i = 0; i < fileChanges.size(); i++) {
             steps.add(
@@ -51,10 +56,10 @@ public abstract class Piece {
     }
 
     public List<Coordinates> straightMoveSteps(Coordinates to) {
-        int fileFrom = this.coordinates.file.ordinal();
-        int fileTo = to.file.ordinal();
-        int rankFrom = this.coordinates.rank;
-        int rankTo = to.rank;
+        int fileFrom = this.coordinates.file.ordinal(),
+                fileTo = to.file.ordinal(),
+                rankFrom = this.coordinates.rank,
+                rankTo = to.rank;
         if (fileFrom == fileTo) {
             List<Integer> rankChanges = new ArrayList<>(IntStream.rangeClosed
                             (Math.min(rankFrom, rankTo), Math.max(rankTo, rankFrom))

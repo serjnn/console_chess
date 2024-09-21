@@ -34,12 +34,9 @@ public class Game {
 
 
         while (true) {
-            if (board.isBlackKingUnderCheck() || board.isWhiteKingUnderCheck()) {
-                checkRelease = true;
-            }
+
 
             /// проврка на шах, если есть то уменьшаем move count на 1
-            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
             System.out.println();
 
 
@@ -88,21 +85,16 @@ public class Game {
 
             // second check
             try {
-                board.isMoveValid(from, to);
+                board.isMoveValidOnBoard(from, to);
             } catch (RuntimeException re) {
                 System.out.println(ANSI_RED + re.getMessage() + ANSI_RESET);
                 continue;
 
             }
 
-            System.out.println(board.getWhites());
-            System.out.println(board.getBlacks());
-            System.out.println(board.isWhiteKingUnderCheck() + " white");
-            System.out.println(board.isBlackKingUnderCheck() + " black");
 
 
-
-            if (board.didIPutMyselfInCheck()) {
+            if (board.didIPutMyselfInCheck(piece,from,to)) {
                 System.out.println(ANSI_RED + "Mind ur king, trash" + ANSI_RESET);
                 continue;
             }
@@ -145,12 +137,15 @@ public class Game {
 //            }
 
             board.addToActive(to);
+
+
+
             movePermisson = false;
-            System.out.println(board.getWhites());
-            System.out.println(board.getBlacks());
             // проверка на шах
 
             moveCount++;
+            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+
 
 
         }
