@@ -5,25 +5,21 @@ import pieces.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static other.Game.blackKingCoords;
-
 public class Board {
 
 
     private final Map<Coordinates, Piece> map = new HashMap<>();
 
-    private Set<Coordinates> whites = new HashSet<>();
+    private Set<Coordinates> activeWhites = new HashSet<>();
 
-    private Set<Coordinates> blacks = new HashSet<>();
+    private Set<Coordinates> activeBlacks = new HashSet<>();
+    private Coordinates tempBlackKingCoords;
+    private Coordinates tempWhiteKingCoords;
 
 
-    public Set<Coordinates> getWhites() {
-        return whites;
-    }
 
-    public Set<Coordinates> getBlacks() {
-        return blacks;
-    }
+
+
 
     public void setPiece(Coordinates coordinates, Piece piece) {
         piece.coordinates = coordinates;
@@ -47,15 +43,17 @@ public class Board {
             setPiece(new Coordinates(file, 2), new Pawn(Color.WHITE, new Coordinates(file, 2)));
             setPiece(new Coordinates(file, 7), new Pawn(Color.BLACK, new Coordinates(file, 7)));
         }
+        setPiece(new Coordinates(File.F, 4), new Pawn(Color.WHITE, new Coordinates(File.F, 4)));
+
 
         //rooks
-        setPiece(new Coordinates(File.A, 1), new Rook(Color.WHITE, new Coordinates(File.A, 1)));
+        setPiece(new Coordinates(File.E, 3), new Rook(Color.WHITE, new Coordinates(File.A, 1)));
         setPiece(new Coordinates(File.H, 1), new Rook(Color.WHITE, new Coordinates(File.H, 1)));
         setPiece(new Coordinates(File.A, 8), new Rook(Color.BLACK, new Coordinates(File.A, 8)));
         setPiece(new Coordinates(File.D, 6), new Rook(Color.BLACK, new Coordinates(File.H, 8)));
 
         //knights
-        setPiece(new Coordinates(File.B, 1), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
+        setPiece(new Coordinates(File.G, 3), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
         setPiece(new Coordinates(File.F, 1), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
         setPiece(new Coordinates(File.B, 8), new Knight(Color.BLACK, new Coordinates(File.B, 8)));
         setPiece(new Coordinates(File.E, 5), new Knight(Color.BLACK, new Coordinates(File.G, 8)));
@@ -67,7 +65,7 @@ public class Board {
         setPiece(new Coordinates(File.F, 8), new Bishop(Color.BLACK, new Coordinates(File.F, 8)));
 
         //queens
-        setPiece(new Coordinates(File.D, 3), new Queen(Color.WHITE, new Coordinates(File.D, 1)));
+        setPiece(new Coordinates(File.H, 6), new Queen(Color.WHITE, new Coordinates(File.D, 1)));
         setPiece(new Coordinates(File.D, 8), new Queen(Color.BLACK, new Coordinates(File.D, 8)));
 
         //kings
@@ -98,7 +96,6 @@ public class Board {
             throw new RuntimeException("u cant go through piece");
         }
 
-
         if (!isSquareEmpty(to) && !isItEnemy(to, Game.moveColor)) {
 
             throw new ArithmeticException("u cant beat ur pieces");
@@ -110,7 +107,6 @@ public class Board {
             throw new RuntimeException("u cant go outside the map");
 
         }
-
 
 
         try {
@@ -161,13 +157,14 @@ public class Board {
     }
 
     public void addToActive(Coordinates to) {
-        if (Game.moveColor == Color.WHITE) {
-            whites.add(to);
-            blacks.remove(to);
+        Piece piece = map.get(to);
+        if (piece.color == Color.WHITE) {
+            activeWhites.add(to);
+            activeBlacks.remove(to);
 
         } else {
-            blacks.add(to);
-            whites.remove(to);
+            activeBlacks.add(to);
+            activeWhites.remove(to);
         }
 
     }
@@ -177,8 +174,8 @@ public class Board {
 
         boolean typeFlag = false, boardFlag = true;
 
-        blacks = blacks.stream().filter(map::containsKey).collect(Collectors.toSet());
-        for (Coordinates cords : blacks) {
+        activeBlacks = activeBlacks.stream().filter(map::containsKey).collect(Collectors.toSet());
+        for (Coordinates cords : activeBlacks) {
             Piece piece = map.get(cords);
             if (!piece.isMoveInvalidForThisType(Game.whiteKingCoords)) {
                 typeFlag = true;
@@ -201,24 +198,31 @@ public class Board {
     }
 
     public boolean isBlackKingUnderCheck() {
-        whites = whites.stream().filter(map::containsKey).collect(Collectors.toSet());
-        for (Coordinates cords : whites) {
+        activeWhites = activeWhites.stream()
+                .filter(map::containsKey)
+                .collect(Collectors.toSet());
+        System.out.println("WHITES    " + activeWhites);
+
+        for (Coordinates cords : activeWhites) {
             boolean typeFlag = false, boardFlag = true;
 
             Piece piece = map.get(cords);
-            if (!piece.isMoveInvalidForThisType(blackKingCoords)) {
+            if (piece.color == Color.BLACK) {continue;}
+            if (!piece.isMoveInvalidForThisType(Game.blackKingCoords)) {
                 typeFlag = true;
             }
             try {
-                isMoveValidOnBoard(cords, blackKingCoords);
+                isMoveValidOnBoard(cords, Game.blackKingCoords);
             } catch (ArithmeticException ae) {
-                System.out.print("");
+                System.out.print("");                //
             } catch (RuntimeException re) {
                 System.out.println("The problem putting black in check is " + re.getMessage());
                 boardFlag = false;
             }
+            System.out.println(map.get(cords) + "    this");
             System.out.println(piece);
-            System.out.println(piece.everyStepToPoint(blackKingCoords));
+            System.out.println(cords);
+//            System.out.println(piece.everyStepToPoint(blackKingCoords));
             System.out.println(typeFlag + "  type");
             System.out.println(boardFlag + "  board");
             if (boardFlag && typeFlag) {
@@ -230,17 +234,44 @@ public class Board {
     }
 
 
+
+    //TODO refactor this shit
     public boolean didIPutMyselfInCheck(Piece piece, Coordinates from, Coordinates to) {
         Piece standedPiece = map.get(to);
 
+        Piece movingPiece = map.get(from);
+        if (movingPiece.getClass().getSimpleName().equals("King")) {
+            if (movingPiece.color == Color.BLACK) {
+                tempBlackKingCoords = from;
+               Game.blackKingCoords = to;
+                System.out.println("black KING " + Game.blackKingCoords );
+
+            } else {
+                tempWhiteKingCoords = from;
+                Game.whiteKingCoords = to;
+
+            }
+        }
 
         map.remove(from);
+
         setPiece(to, piece);
+        System.out.println("to      " + to);
+        System.out.println("piece   " + piece);
+        System.out.println("map get to   " + map.get(to));
 
 
         boolean result = Game.moveColor == Color.WHITE ?
                 isWhiteKingUnderCheck() : isBlackKingUnderCheck();
 
+
+        if (movingPiece.getClass().getSimpleName().equals("King")) {
+            if (movingPiece.color == Color.BLACK) {
+                Game.blackKingCoords = tempBlackKingCoords;
+            } else {
+                Game.whiteKingCoords = tempWhiteKingCoords;
+            }
+        }
         map.remove(to);
         setPiece(from, piece);
         if (standedPiece != null) {

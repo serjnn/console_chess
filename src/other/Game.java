@@ -58,7 +58,13 @@ public class Game {
                         .valueOf((move.charAt(3) + "")
                                 .toUpperCase())
                         , Character.getNumericValue(move.charAt(4)));
-            } catch (IllegalArgumentException e) {
+            }
+            catch (StringIndexOutOfBoundsException se){
+                System.out.println(ANSI_RED + "Please enter some" + ANSI_RESET);
+                continue;
+            }
+
+            catch (IllegalArgumentException e) {
                 System.out.println(ANSI_RED + "Please enter correct coords" + ANSI_RESET);
                 continue;
             }
@@ -76,10 +82,14 @@ public class Game {
                 if (!movePermisson &&  piece.isMoveInvalidForThisType(to)) {
                     System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
                             " can't move like that" + ANSI_RESET);
+                    movePermisson = false;
+
                     continue;
                 }
             } catch (NullPointerException ne) {
                 System.out.println(ANSI_RED + "there is empty from where u wanna move" + ANSI_RESET);
+                movePermisson = false;
+
                 continue;
             }
 
@@ -88,6 +98,7 @@ public class Game {
                 board.isMoveValidOnBoard(from, to);
             } catch (RuntimeException re) {
                 System.out.println(ANSI_RED + re.getMessage() + ANSI_RESET);
+                movePermisson = false;
                 continue;
 
             }
@@ -96,6 +107,8 @@ public class Game {
 
             if (board.didIPutMyselfInCheck(piece,from,to)) {
                 System.out.println(ANSI_RED + "Mind ur king, trash" + ANSI_RESET);
+                movePermisson = false;
+
                 continue;
             }
 

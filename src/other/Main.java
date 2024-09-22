@@ -1,9 +1,25 @@
 package other;
 
+import pieces.Color;
+import pieces.Coordinates;
+import pieces.File;
+import pieces.Queen;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+        Queen queen = new Queen(Color.WHITE, new Coordinates(File.H,6));
+        System.out.println(queen.isMoveInvalidForThisType(
+                new Coordinates(File.E,3)
+        ));
+        Board board = new Board();
+        board.setupDefault();
+        Game game = new Game();
+        game.gameLoop(board);
+
+
+
 //        Rook rook = new Rook(Color.BLACK, new Coordinates(File.A, 6));
 //        List<Coordinates> list =
 //                (rook.everyStepToPoint(new Coordinates(File.A, 2)));
@@ -42,10 +58,6 @@ movecount++
 //        System.out.println(list2);
 
 
-        Board board = new Board();
-        board.setupDefault();
-        Game game = new Game();
-        game.gameLoop(board);
 //
 
 //        Pawn pawn = new Pawn(Color.BLACK,new Coordinates(File.A,2));

@@ -42,8 +42,6 @@ public abstract class Piece {
         if (rankFrom > rankTo) {
             Collections.reverse(rankChanges);
         }
-        System.out.println(rankChanges + "    rank");
-        System.out.println(fileChanges + "    file");
         List<Coordinates> steps = new ArrayList<>();
         for (int i = 0; i < fileChanges.size(); i++) {
             steps.add(
