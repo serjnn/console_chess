@@ -17,10 +17,6 @@ public class Board {
     private Coordinates tempWhiteKingCoords;
 
 
-
-
-
-
     public void setPiece(Coordinates coordinates, Piece piece) {
         piece.coordinates = coordinates;
         map.put(coordinates, piece);
@@ -68,9 +64,10 @@ public class Board {
         setPiece(new Coordinates(File.H, 6), new Queen(Color.WHITE, new Coordinates(File.D, 1)));
         setPiece(new Coordinates(File.D, 8), new Queen(Color.BLACK, new Coordinates(File.D, 8)));
 
-        //kings
-        setPiece(new Coordinates(File.E, 1), new King(Color.WHITE, new Coordinates(File.E, 1)));
-        setPiece(new Coordinates(File.E, 6), new King(Color.BLACK, new Coordinates(File.E, 8)));
+        //
+
+        setPiece(new Coordinates(File.C, 3), new King(Color.WHITE, new Coordinates(File.E, 1)));
+        setPiece(new Coordinates(File.C, 6), new King(Color.BLACK, new Coordinates(File.E, 8)));
     }
 
 
@@ -88,9 +85,8 @@ public class Board {
 
     }
 
-    public void isMoveValidOnBoard(Coordinates from, Coordinates to) throws
+    public void isMoveValidOnBoard(Piece piece,Coordinates from, Coordinates to) throws
             RuntimeException {
-        Piece piece = map.get(from);
         List<Coordinates> steps = piece.everyStepToPoint(to);
         if (!isWayToPointEmpty(steps)) {
             throw new RuntimeException("u cant go through piece");
@@ -140,7 +136,6 @@ public class Board {
         steps = steps.subList(0, steps.size() - 1);
         for (Coordinates cords : steps) {
             if (map.containsKey(cords)) {
-                System.out.println("The obstacle is " + map.get(cords));
                 return false;
 
             }
@@ -182,11 +177,10 @@ public class Board {
             }
 
             try {
-                isMoveValidOnBoard(cords, Game.whiteKingCoords);
+                isMoveValidOnBoard(piece,cords, Game.whiteKingCoords);
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {
-                System.out.println("The problem putting white in check is " + re.getMessage());
                 boardFlag = false;
             }
 
@@ -201,30 +195,26 @@ public class Board {
         activeWhites = activeWhites.stream()
                 .filter(map::containsKey)
                 .collect(Collectors.toSet());
-        System.out.println("WHITES    " + activeWhites);
 
         for (Coordinates cords : activeWhites) {
             boolean typeFlag = false, boardFlag = true;
 
             Piece piece = map.get(cords);
-            if (piece.color == Color.BLACK) {continue;}
+            if (piece.color == Color.BLACK) {
+                continue;
+            }
             if (!piece.isMoveInvalidForThisType(Game.blackKingCoords)) {
                 typeFlag = true;
             }
             try {
-                isMoveValidOnBoard(cords, Game.blackKingCoords);
+                isMoveValidOnBoard(piece,cords, Game.blackKingCoords);
             } catch (ArithmeticException ae) {
                 System.out.print("");                //
             } catch (RuntimeException re) {
                 System.out.println("The problem putting black in check is " + re.getMessage());
                 boardFlag = false;
             }
-            System.out.println(map.get(cords) + "    this");
-            System.out.println(piece);
-            System.out.println(cords);
-//            System.out.println(piece.everyStepToPoint(blackKingCoords));
-            System.out.println(typeFlag + "  type");
-            System.out.println(boardFlag + "  board");
+
             if (boardFlag && typeFlag) {
                 return true;
             }
@@ -234,31 +224,15 @@ public class Board {
     }
 
 
-
-    //TODO refactor this shit
     public boolean didIPutMyselfInCheck(Piece piece, Coordinates from, Coordinates to) {
-        Piece standedPiece = map.get(to);
-
+        Piece previousPiece = map.get(to);
         Piece movingPiece = map.get(from);
+
         if (movingPiece.getClass().getSimpleName().equals("King")) {
-            if (movingPiece.color == Color.BLACK) {
-                tempBlackKingCoords = from;
-               Game.blackKingCoords = to;
-                System.out.println("black KING " + Game.blackKingCoords );
-
-            } else {
-                tempWhiteKingCoords = from;
-                Game.whiteKingCoords = to;
-
-            }
+            mockKingCoords(movingPiece,from,to);
         }
 
-        map.remove(from);
-
-        setPiece(to, piece);
-        System.out.println("to      " + to);
-        System.out.println("piece   " + piece);
-        System.out.println("map get to   " + map.get(to));
+        mockMove(piece,from, to);
 
 
         boolean result = Game.moveColor == Color.WHITE ?
@@ -266,18 +240,52 @@ public class Board {
 
 
         if (movingPiece.getClass().getSimpleName().equals("King")) {
-            if (movingPiece.color == Color.BLACK) {
-                Game.blackKingCoords = tempBlackKingCoords;
-            } else {
-                Game.whiteKingCoords = tempWhiteKingCoords;
-            }
+            rollbackKingCoords(movingPiece,from,to);
         }
-        map.remove(to);
-        setPiece(from, piece);
-        if (standedPiece != null) {
-            setPiece(to, standedPiece);
+        rollback(piece,from, to);
+
+        if (previousPiece != null) {
+            setPiece(to, previousPiece); // revive piece that could be slain by mocking piece
         }
         return result;
 
+    }
+
+    private void rollbackKingCoords(Piece movingPiece, Coordinates from, Coordinates to) {
+        if (movingPiece.color == Color.BLACK) {
+            Game.blackKingCoords = tempBlackKingCoords;
+        } else {
+            Game.whiteKingCoords = tempWhiteKingCoords;
+        }
+
+
+    }
+
+    private void mockKingCoords(Piece movingPiece, Coordinates from, Coordinates to) {
+        if (movingPiece.color == Color.BLACK) {
+            tempBlackKingCoords = from;
+            Game.blackKingCoords = to;
+        } else {
+            tempWhiteKingCoords = from;
+            Game.whiteKingCoords = to;
+
+        }
+
+    }
+
+    private void rollback(Piece piece, Coordinates from, Coordinates to) {
+        map.remove(to);
+        setPiece(from, piece);
+    }
+
+    private void mockMove(Piece piece, Coordinates from, Coordinates to) {
+        map.remove(from);
+        setPiece(to, piece);
+    }
+
+    public void commitMove(Piece piece, Coordinates from, Coordinates to) {
+        removePieceFromSquare(from);
+        setPiece(to, piece);
+        addToActive(to);
     }
 }

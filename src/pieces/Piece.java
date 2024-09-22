@@ -31,7 +31,7 @@ public abstract class Piece {
                 .boxed().toList());
 
         List<Integer> fileChanges = new ArrayList<>(IntStream.rangeClosed
-                        (Math.min(fileFrom, fileTo), Math.max(fileTo, fileFrom))//
+                        (Math.min(fileFrom, fileTo), Math.max(fileTo, fileFrom))
                 .boxed().toList());
 
 

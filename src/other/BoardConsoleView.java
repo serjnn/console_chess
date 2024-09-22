@@ -63,7 +63,9 @@ public class BoardConsoleView {
             default -> "";
         };
 
-        return piece.color == Color.WHITE ? " " + res.toUpperCase() + " " : ANSI_BLACK + " " + res.toUpperCase() + " " + ANSI_RESET;
+        return piece.color == Color.WHITE ?
+                " " + res.toUpperCase() + " "
+                : ANSI_BLACK + " " + res.toUpperCase() + " " + ANSI_RESET;
     }
 
 
