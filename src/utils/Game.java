@@ -1,4 +1,4 @@
-package other;
+package utils;
 
 import pieces.Color;
 import pieces.Coordinates;
@@ -7,19 +7,16 @@ import pieces.Piece;
 
 import java.util.Scanner;
 
+import static utils.KingManager.blackKingCoords;
+import static utils.KingManager.whiteKingCoords;
+
 
 public class Game {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
 
-    public static Coordinates whiteKingCoords;
-    public static Coordinates blackKingCoords;
 
-    static {
-        whiteKingCoords = new Coordinates(File.C, 3);
-        blackKingCoords = new Coordinates(File.C, 6);
-    }
 
     public static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
@@ -32,7 +29,7 @@ public class Game {
 
         while (true) {
 
-            BoardConsoleView view = new BoardConsoleView();
+            BoardConsoleRenderer view = new BoardConsoleRenderer();
             view.render(board);
 
             Scanner scanner = new Scanner(System.in);
@@ -105,6 +102,8 @@ public class Game {
 
             board.commitMove(piece,from,to);
 
+            System.out.println(whiteKingCoords);
+            System.out.println(blackKingCoords);
             movePermisson = false;
 
             moveCount++;

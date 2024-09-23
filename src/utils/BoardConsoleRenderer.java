@@ -1,13 +1,13 @@
-package other;
+package utils;
 
 import pieces.Color;
 import pieces.Coordinates;
 import pieces.File;
 import pieces.Piece;
 
-import static other.Game.ANSI_RESET;
+import static utils.Game.ANSI_RESET;
 
-public class BoardConsoleView {
+public class BoardConsoleRenderer {
     public static final String ANSI_WHITE_SQUARE_BACKGROUND = "\u001B[42m";
     public static final String ANSI_BLACK_SQUARE_BACKGROUND = "\u001B[41m";
     public static final String ANSI_BLACK = "\u001B[30m";
