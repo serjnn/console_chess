@@ -1,12 +1,13 @@
 package utils;
 
+import managers.KingManager;
 import pieces.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static utils.KingManager.blackKingCoords;
-import static utils.KingManager.whiteKingCoords;
+import static managers.KingManager.blackKingCoords;
+import static managers.KingManager.whiteKingCoords;
 
 public class Board {
 
@@ -72,16 +73,16 @@ public class Board {
     }
 
 
-    public Color getPieceColor(Coordinates from) {
+    private Color getPieceColor(Coordinates from) {
         return map.get(from).color;
     }
 
-    public boolean isItEnemy(Coordinates to, Color moveColor) {
+    private boolean isItEnemy(Coordinates to, Color moveColor) {
         return map.get(to).color != moveColor;
 
     }
 
-    public void removePieceFromSquare(Coordinates coordinates) {
+    private void removePieceFromSquare(Coordinates coordinates) {
         map.remove(coordinates);
 
     }
@@ -146,13 +147,15 @@ public class Board {
     }
 
 
+
+
     public boolean isSquareWhite(Coordinates coordinates) {
         return ((coordinates.file.ordinal() + 1) % 2 == 0 && coordinates.rank % 2 == 0) || (
                 (coordinates.file.ordinal() + 1) % 2 != 0 && coordinates.rank % 2 != 0
         );
     }
 
-    public void addToActive(Coordinates to) {
+    private void addToActive(Coordinates to) {
         Piece piece = map.get(to);
         if (piece.color == Color.WHITE) {
             activeWhites.add(to);
@@ -166,7 +169,7 @@ public class Board {
     }
 
 
-    public boolean isWhiteKingUnderCheck() {
+    private boolean isWhiteKingUnderCheck() {
 
         boolean typeFlag = false, boardFlag = true;
 
@@ -192,7 +195,7 @@ public class Board {
         return false;
     }
 
-    public boolean isBlackKingUnderCheck() {
+    private boolean isBlackKingUnderCheck() {
         activeWhites = activeWhites.stream()
                 .filter(map::containsKey)
                 .collect(Collectors.toSet());

@@ -3,6 +3,8 @@ package pieces;
 import java.util.ArrayList;
 import java.util.List;
 
+import static managers.PawnManager.pawnPeacefulMove;
+
 public class Pawn extends Piece {
     public Pawn(Color color, Coordinates coordinates) {
         super(color, coordinates);
@@ -10,7 +12,10 @@ public class Pawn extends Piece {
 
     @Override
     public boolean isMoveInvalidForThisType(Coordinates to) {
-
+        if (pawnPeacefulMove) {
+            pawnPeacefulMove = false;
+            return false;
+        }
 
         int fileFrom = this.coordinates.file.ordinal(),
                 fileTo = to.file.ordinal(),
@@ -19,25 +24,23 @@ public class Pawn extends Piece {
         Color color = this.color;
 
         Boolean fileCheck = fileTo == fileFrom - 1 ||
-                fileTo == fileFrom +1;
+                fileTo == fileFrom + 1;
 
         Boolean rankCheck =
                 color == Color.WHITE ?
                         rankTo == rankFrom + 1 :
-                        rankTo == rankFrom -1;
+                        rankTo == rankFrom - 1;
         return !(fileCheck && rankCheck);
 
-}
+    }
 
 
+    @Override
 
-@Override
+    public List<Coordinates> everyStepToPoint(Coordinates to) {
 
-public List<Coordinates> everyStepToPoint(Coordinates to)  {
-
-    return new ArrayList<>(List.of(to));
-}
-
+        return new ArrayList<>(List.of(to));
+    }
 
 
 }
