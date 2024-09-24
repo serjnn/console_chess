@@ -3,13 +3,36 @@ package managers;
 import pieces.Color;
 import pieces.Coordinates;
 import pieces.Piece;
+import pieces.Queen;
 import utils.Board;
 
 
-public class PawnManager {
+public class PawnManager implements Manager{
 
     public  static boolean pawnPeacefulMove;
-    public static boolean canPawnPeacefullyMove(Piece piece, Coordinates to, Board board) {
+
+    public static void checkForUpgrade(Piece piece, Coordinates to, Board board) {
+        if (!piece.getClass().getSimpleName().equals("Pawn")) {
+            return;
+        }
+        if (to.rank == 8 || to.rank == 1){
+            board.setPiece(to,new Queen(piece.color,to));
+
+        }
+
+
+    }
+
+    @Override
+    public void processMove(Piece piece, Coordinates from, Coordinates to,Board board) {
+        if (piece.getClass().getSimpleName().equals("Pawn")
+                && canPawnPeacefullyMove(piece, to, board)) {
+            pawnPeacefulMove = true;
+
+        }
+
+    }
+    private boolean canPawnPeacefullyMove(Piece piece, Coordinates to, Board board) {
 
 
         int fileFrom = piece.coordinates.file.ordinal(),
@@ -40,6 +63,7 @@ public class PawnManager {
 
 
     }
+
 
 
 }

@@ -41,7 +41,7 @@ public class Board {
             setPiece(new Coordinates(file, 2), new Pawn(Color.WHITE, new Coordinates(file, 2)));
             setPiece(new Coordinates(file, 7), new Pawn(Color.BLACK, new Coordinates(file, 7)));
         }
-        setPiece(new Coordinates(File.F, 4), new Pawn(Color.WHITE, new Coordinates(File.F, 4)));
+        setPiece(new Coordinates(File.G, 6), new Pawn(Color.WHITE, new Coordinates(File.F, 4)));
 
 
         //rooks
@@ -213,9 +213,8 @@ public class Board {
             try {
                 isMoveValidOnBoard(piece, cords, blackKingCoords);
             } catch (ArithmeticException ae) {
-                System.out.print("");                //
+                System.out.print("");
             } catch (RuntimeException re) {
-                System.out.println("The problem putting black in check is " + re.getMessage());
                 boardFlag = false;
             }
 
@@ -270,4 +269,6 @@ public class Board {
         setPiece(to, piece);
         addToActive(to);
     }
+
+
 }

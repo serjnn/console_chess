@@ -1,25 +1,32 @@
 package utils;
 
+import managers.Manager;
 import managers.PawnManager;
 import pieces.Color;
 import pieces.Coordinates;
 import pieces.File;
 import pieces.Piece;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-
-import static managers.KingManager.blackKingCoords;
-import static managers.KingManager.whiteKingCoords;
-import static managers.PawnManager.pawnPeacefulMove;
 
 
 public class Game {
+
+    List<Manager> managers= new ArrayList<>();
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
 
     private static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
+
+    public void registerManager(Manager manager) {
+        managers.add(manager);
+
+
+    }
 
 
     public void gameLoop(Board board) {
@@ -52,11 +59,10 @@ public class Game {
             }
             Piece piece = board.getPiece(from);
 
-            if (piece.getClass().getSimpleName().equals("Pawn")
-                    && PawnManager.canPawnPeacefullyMove(piece, to, board)) {
-                pawnPeacefulMove = true;
-
+            for (Manager manager : managers) {
+                manager.processMove(piece, from, to, board);
             }
+
             try {
                 if (piece.isMoveInvalidForThisType(to)) {
                     System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
@@ -84,21 +90,12 @@ public class Game {
             }
 
 
-            if (piece.getClass().getSimpleName().equals("King")) {
-                if (moveColor == Color.WHITE) {
-                    whiteKingCoords = to;
-                } else {
-                    blackKingCoords = to;
-
-                }
-
-            }
-
             board.commitMove(piece, from, to);
 
 
             moveCount++;
             moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+            PawnManager.checkForUpgrade(piece,to,board);
 
 
         }
