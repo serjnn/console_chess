@@ -1,20 +1,18 @@
 package utils;
 
-import managers.Manager;
+import managers.KingManager;
 import managers.PawnManager;
 import pieces.Color;
 import pieces.Coordinates;
 import pieces.File;
 import pieces.Piece;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 
 public class Game {
 
-    List<Manager> managers= new ArrayList<>();
+
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
@@ -22,12 +20,14 @@ public class Game {
     private static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
 
-    public void registerManager(Manager manager) {
-        managers.add(manager);
+    private final KingManager  kingManager;
 
+    private  final PawnManager pawnManager;
 
+    public Game(KingManager kingManager, PawnManager pawnManager) {
+        this.kingManager = kingManager;
+        this.pawnManager = pawnManager;
     }
-
 
     public void gameLoop(Board board) {
 
@@ -43,11 +43,11 @@ public class Game {
             Coordinates to;
             try {
                 from = new Coordinates(File
-                        .valueOf((move.charAt(0) + "")
+                        .valueOf(String.valueOf(move.charAt(0))
                                 .toUpperCase())
                         , Character.getNumericValue(move.charAt(1)));
                 to = new Coordinates(File
-                        .valueOf((move.charAt(3) + "")
+                        .valueOf(String.valueOf(move.charAt(3))
                                 .toUpperCase())
                         , Character.getNumericValue(move.charAt(4)));
             } catch (StringIndexOutOfBoundsException se) {
@@ -59,9 +59,8 @@ public class Game {
             }
             Piece piece = board.getPiece(from);
 
-            for (Manager manager : managers) {
-                manager.processMove(piece, from, to, board);
-            }
+
+            pawnManager.checkForPeacefulMove(piece,from,to,board);
 
             try {
                 if (piece.isMoveInvalidForThisType(to)) {
@@ -95,7 +94,9 @@ public class Game {
 
             moveCount++;
             moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
-            PawnManager.checkForUpgrade(piece,to,board);
+            pawnManager.checkForUpgrade(piece, to, board);
+            kingManager.checkForChangeKingCoords(piece,to);
+            System.out.println(KingManager.blackKingCoords);
 
 
         }

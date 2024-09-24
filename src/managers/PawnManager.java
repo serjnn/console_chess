@@ -7,24 +7,24 @@ import pieces.Queen;
 import utils.Board;
 
 
-public class PawnManager implements Manager{
+public class PawnManager {
 
-    public  static boolean pawnPeacefulMove;
+    public static boolean pawnPeacefulMove;
 
-    public static void checkForUpgrade(Piece piece, Coordinates to, Board board) {
+    public void checkForUpgrade(Piece piece, Coordinates to, Board board) {
         if (!piece.getClass().getSimpleName().equals("Pawn")) {
             return;
         }
-        if (to.rank == 8 || to.rank == 1){
-            board.setPiece(to,new Queen(piece.color,to));
+        if (to.rank == 8 || to.rank == 1) {
+            board.setPiece(to, new Queen(piece.color, to));
 
         }
 
 
     }
 
-    @Override
-    public void processMove(Piece piece, Coordinates from, Coordinates to,Board board) {
+
+    public void checkForPeacefulMove(Piece piece, Coordinates from, Coordinates to, Board board) {
         if (piece.getClass().getSimpleName().equals("Pawn")
                 && canPawnPeacefullyMove(piece, to, board)) {
             pawnPeacefulMove = true;
@@ -32,6 +32,7 @@ public class PawnManager implements Manager{
         }
 
     }
+
     private boolean canPawnPeacefullyMove(Piece piece, Coordinates to, Board board) {
 
 
@@ -40,7 +41,7 @@ public class PawnManager implements Manager{
                 rankFrom = piece.coordinates.rank,
                 rankTo = to.rank;
         Color color = piece.color;
-        int possibleDistance = rankFrom == 2 || rankFrom == 7 ? 2 :1;
+        int possibleDistance = rankFrom == 2 || rankFrom == 7 ? 2 : 1;
 
 
         boolean emptySquareCheck = board.isSquareEmpty(to);
@@ -49,7 +50,7 @@ public class PawnManager implements Manager{
                         board.isSquareEmpty(new Coordinates(piece.coordinates.file,
                                 piece.coordinates.rank + 1)) :
                         board.isSquareEmpty(new Coordinates(piece.coordinates.file,
-                                piece.coordinates.rank -1 ));
+                                piece.coordinates.rank - 1));
 
         boolean fileCheck = fileTo == fileFrom;
         boolean rankCheck = color == Color.WHITE ?
@@ -59,11 +60,10 @@ public class PawnManager implements Manager{
                         || rankTo == rankFrom - 1;
 
         return fileCheck && rankCheck && emptyNextSquareCheck
-                 && emptySquareCheck;
+                && emptySquareCheck;
 
 
     }
-
 
 
 }

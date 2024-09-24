@@ -5,11 +5,10 @@ import pieces.Color;
 import pieces.Coordinates;
 import pieces.File;
 import pieces.Piece;
-import utils.Board;
 
 import static utils.Game.moveColor;
 
-public class KingManager implements Manager {
+public class KingManager  {
 
 
     public static Coordinates whiteKingCoords;
@@ -23,20 +22,7 @@ public class KingManager implements Manager {
     private static Coordinates tempBlackKingCoords;
     private static Coordinates tempWhiteKingCoords;
 
-    @Override
-    public void processMove(Piece piece, Coordinates from, Coordinates to, Board board) {
-        if (piece.getClass().getSimpleName().equals("King")) {
-            if (moveColor == Color.WHITE) {
-                whiteKingCoords = to;
-            } else {
-                blackKingCoords = to;
 
-            }
-
-        }
-
-
-    }
 
     public static void rollbackKingCoords(Color color) {
         if (color == Color.BLACK) {
@@ -64,4 +50,16 @@ public class KingManager implements Manager {
     }
 
 
+    public void checkForChangeKingCoords(Piece piece, Coordinates to) {
+        if (piece.getClass().getSimpleName().equals("King")) {
+            if (moveColor == Color.WHITE) {
+                whiteKingCoords = to;
+            } else {
+                blackKingCoords = to;
+
+            }
+
+        }
+
+    }
 }
