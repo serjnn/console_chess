@@ -17,7 +17,7 @@ public class Game {
     public static final String ANSI_RESET = "\u001B[0m";
 
 
-    private static int moveCount = 0;
+    public static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
 
     private final KingManager  kingManager;
@@ -83,8 +83,8 @@ public class Game {
             }
 
 
-            if (board.didIPutMyselfInCheck(piece, from, to)) {
-                System.out.println(ANSI_RED + "Mind ur king, trash" + ANSI_RESET);
+            if (board.amIUnderCheck(piece, from, to)) {
+                System.out.println(ANSI_RED + "You are under check" + ANSI_RESET);
                 continue;
             }
 
@@ -92,11 +92,8 @@ public class Game {
             board.commitMove(piece, from, to);
 
 
-            moveCount++;
-            moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
             pawnManager.checkForUpgrade(piece, to, board);
             kingManager.checkForChangeKingCoords(piece,to);
-            System.out.println(KingManager.blackKingCoords);
 
 
         }

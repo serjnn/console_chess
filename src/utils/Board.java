@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import static managers.KingManager.blackKingCoords;
 import static managers.KingManager.whiteKingCoords;
+import static utils.Game.moveCount;
 
 public class Board {
 
@@ -66,7 +67,7 @@ public class Board {
         setPiece(new Coordinates(File.H, 6), new Queen(Color.WHITE, new Coordinates(File.D, 1)));
         setPiece(new Coordinates(File.D, 8), new Queen(Color.BLACK, new Coordinates(File.D, 8)));
 
-        //
+        //kings
 
         setPiece(new Coordinates(File.C, 3), new King(Color.WHITE, new Coordinates(File.E, 1)));
         setPiece(new Coordinates(File.C, 6), new King(Color.BLACK, new Coordinates(File.E, 8)));
@@ -91,18 +92,18 @@ public class Board {
             RuntimeException {
         List<Coordinates> steps = piece.everyStepToPoint(to);
         if (!isWayToPointEmpty(steps)) {
-            throw new RuntimeException("u cant go through piece");
+            throw new RuntimeException("You cant go through piece");
         }
 
         if (!isSquareEmpty(to) && !isItEnemy(to, Game.moveColor)) {
 
-            throw new ArithmeticException("u cant beat ur pieces");
+            throw new ArithmeticException("You cant beat ur pieces");
 
         }
 
 
         if (to.rank < 1 || to.rank > 8) {
-            throw new RuntimeException("u cant go outside the map");
+            throw new RuntimeException("You cant go outside the map");
 
         }
 
@@ -116,7 +117,7 @@ public class Board {
 
                 }
         } catch (NullPointerException np) {
-            throw new RuntimeException("u cant move like that cuz pawn is not attacking");
+            throw new RuntimeException("You cant move like that cuz pawn is not attacking");
         }
 
         try {
@@ -227,7 +228,7 @@ public class Board {
     }
 
 
-    public boolean didIPutMyselfInCheck(Piece piece, Coordinates from, Coordinates to) {
+    public boolean amIUnderCheck(Piece piece, Coordinates from, Coordinates to) {
         Piece previousPiece = map.get(to);
 
         if (piece.getClass().getSimpleName().equals("King")) {
@@ -265,9 +266,12 @@ public class Board {
     }
 
     public void commitMove(Piece piece, Coordinates from, Coordinates to) {
+
         removePieceFromSquare(from);
         setPiece(to, piece);
         addToActive(to);
+        moveCount++;
+        Game.moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
     }
 
 
