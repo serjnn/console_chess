@@ -6,8 +6,7 @@ import pieces.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static managers.KingManager.blackKingCoords;
-import static managers.KingManager.whiteKingCoords;
+import static managers.KingManager.*;
 import static utils.Game.moveCount;
 
 public class Board {
@@ -42,14 +41,13 @@ public class Board {
             setPiece(new Coordinates(file, 2), new Pawn(Color.WHITE, new Coordinates(file, 2)));
             setPiece(new Coordinates(file, 7), new Pawn(Color.BLACK, new Coordinates(file, 7)));
         }
-        setPiece(new Coordinates(File.G, 6), new Pawn(Color.WHITE, new Coordinates(File.F, 4)));
 
 
         //rooks
-        setPiece(new Coordinates(File.E, 3), new Rook(Color.WHITE, new Coordinates(File.A, 1)));
+        setPiece(new Coordinates(File.A, 1), new Rook(Color.WHITE, new Coordinates(File.A, 1)));
         setPiece(new Coordinates(File.H, 1), new Rook(Color.WHITE, new Coordinates(File.H, 1)));
         setPiece(new Coordinates(File.A, 8), new Rook(Color.BLACK, new Coordinates(File.A, 8)));
-        setPiece(new Coordinates(File.D, 6), new Rook(Color.BLACK, new Coordinates(File.H, 8)));
+        setPiece(new Coordinates(File.H, 8), new Rook(Color.BLACK, new Coordinates(File.H, 8)));
 
         //knights
         setPiece(new Coordinates(File.G, 3), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
@@ -58,8 +56,8 @@ public class Board {
         setPiece(new Coordinates(File.E, 5), new Knight(Color.BLACK, new Coordinates(File.G, 8)));
 
         //bishops
-        setPiece(new Coordinates(File.C, 1), new Bishop(Color.WHITE, new Coordinates(File.C, 1)));
-        setPiece(new Coordinates(File.F, 1), new Bishop(Color.WHITE, new Coordinates(File.F, 1)));
+        setPiece(new Coordinates(File.D, 3), new Bishop(Color.WHITE, new Coordinates(File.C, 1)));
+        setPiece(new Coordinates(File.C, 1), new Bishop(Color.WHITE, new Coordinates(File.F, 1)));
         setPiece(new Coordinates(File.C, 8), new Bishop(Color.BLACK, new Coordinates(File.C, 8)));
         setPiece(new Coordinates(File.F, 8), new Bishop(Color.BLACK, new Coordinates(File.F, 8)));
 
@@ -69,8 +67,8 @@ public class Board {
 
         //kings
 
-        setPiece(new Coordinates(File.C, 3), new King(Color.WHITE, new Coordinates(File.E, 1)));
-        setPiece(new Coordinates(File.C, 6), new King(Color.BLACK, new Coordinates(File.E, 8)));
+        setPiece(new Coordinates(File.E, 1), new King(Color.WHITE, new Coordinates(File.E, 1)));
+        setPiece(new Coordinates(File.E, 8), new King(Color.BLACK, new Coordinates(File.E, 8)));
     }
 
 
@@ -83,13 +81,17 @@ public class Board {
 
     }
 
-    private void removePieceFromSquare(Coordinates coordinates) {
+    public void removePieceFromSquare(Coordinates coordinates) {
         map.remove(coordinates);
 
     }
 
-    public void isMoveValidOnBoard(Piece piece, Coordinates from, Coordinates to) throws
+    public void isMoveValidOnBoard(Piece piece, Coordinates to) throws
             RuntimeException {
+        if (castling) {
+            castling = false;
+            return;
+        }
         List<Coordinates> steps = piece.everyStepToPoint(to);
         if (!isWayToPointEmpty(steps)) {
             throw new RuntimeException("You cant go through piece");
@@ -110,8 +112,8 @@ public class Board {
 
         try {
             if (piece.getClass().getSimpleName().equals("Pawn"))
-                if (from.file != to.file && !(isItEnemy(to, Game.moveColor))
-                        || from.file == to.file && !isSquareEmpty(to)) {
+                if (piece.coordinates.file != to.file && !(isItEnemy(to, Game.moveColor))
+                        || piece.coordinates.file == to.file && !isSquareEmpty(to)) {
                     throw new RuntimeException("this pawn cant move that way");
 
 
@@ -121,7 +123,7 @@ public class Board {
         }
 
         try {
-            if (getPieceColor(from) != Game.moveColor) {
+            if (getPieceColor(piece.coordinates) != Game.moveColor) {
                 throw new ArithmeticException("that piece isn't yours");
 
             }
@@ -146,8 +148,6 @@ public class Board {
         return true;
 
     }
-
-
 
 
     public boolean isSquareWhite(Coordinates coordinates) {
@@ -182,7 +182,7 @@ public class Board {
             }
 
             try {
-                isMoveValidOnBoard(piece, cords, whiteKingCoords);
+                isMoveValidOnBoard(piece,  whiteKingCoords);
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {
@@ -212,7 +212,7 @@ public class Board {
                 typeFlag = true;
             }
             try {
-                isMoveValidOnBoard(piece, cords, blackKingCoords);
+                isMoveValidOnBoard(piece,  blackKingCoords);
             } catch (ArithmeticException ae) {
                 System.out.print("");
             } catch (RuntimeException re) {

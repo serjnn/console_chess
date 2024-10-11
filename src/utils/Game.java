@@ -16,7 +16,8 @@ public class Game {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
-
+public static boolean haveWhiteKingMoved = false;
+public static boolean haveBlackKingMoved =false;
     public static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
 
@@ -61,6 +62,7 @@ public class Game {
 
 
             pawnManager.checkForPeacefulMove(piece,from,to,board);
+            kingManager.checkForCastling(piece,to,board);
 
             try {
                 if (piece.isMoveInvalidForThisType(to)) {
@@ -75,7 +77,7 @@ public class Game {
                 continue;
             }
             try {
-                board.isMoveValidOnBoard(piece, from, to);
+                board.isMoveValidOnBoard(piece,  to);
             } catch (RuntimeException re) {
                 System.out.println(ANSI_RED + re.getMessage() + ANSI_RESET);
                 continue;

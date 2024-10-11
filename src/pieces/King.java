@@ -3,6 +3,8 @@ package pieces;
 import java.util.ArrayList;
 import java.util.List;
 
+import static managers.KingManager.castling;
+
 public class King extends Piece {
     public King(Color color, Coordinates coordinates) {
         super(color, coordinates);
@@ -10,6 +12,10 @@ public class King extends Piece {
 
     @Override
     public boolean isMoveInvalidForThisType( Coordinates to) {
+        if (castling) {
+            return false;
+        }
+
         int fileFrom = this.coordinates.file.ordinal(),
                 fileTo = to.file.ordinal(),
                 rankFrom = this.coordinates.rank,

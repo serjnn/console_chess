@@ -15,7 +15,6 @@ public class Rook extends Piece {
 
     @Override
     public List<Coordinates> everyStepToPoint(Coordinates to) {
-
         return straightMoveSteps(to);
         }
     }
