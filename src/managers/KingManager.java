@@ -18,8 +18,8 @@ public class KingManager {
     public static Coordinates blackKingCoords;
 
     static {
-        whiteKingCoords = new Coordinates(File.C, 3);
-        blackKingCoords = new Coordinates(File.C, 6);
+        whiteKingCoords = new Coordinates(File.E, 1);
+        blackKingCoords = new Coordinates(File.E, 8);
     }
 
     private static Coordinates tempBlackKingCoords;
@@ -55,10 +55,12 @@ public class KingManager {
 
     public void checkForChangeKingCoords(Piece piece, Coordinates to) {
         if (piece.getClass().getSimpleName().equals("King")) {
-            if (moveColor == Color.WHITE) {
+            if (piece.color == Color.WHITE) {
                 whiteKingCoords = to;
+                haveWhiteKingMoved = true;
             } else {
                 blackKingCoords = to;
+                haveWhiteKingMoved = true;
 
             }
 
@@ -109,7 +111,7 @@ public class KingManager {
 
                         )
                         .allMatch(board::isSquareEmpty);
-
+        System.out.println(isThereEmpty);
         if (!isThereEmpty){return;}
         File gottenFile = isThisShiftToRight ? File.values()[fileTo - 1] : File.values()[fileTo + 1];
         board.removePieceFromSquare(mockingRook.coordinates);

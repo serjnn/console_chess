@@ -200,7 +200,6 @@ public class Board {
         activeWhites = activeWhites.stream()
                 .filter(map::containsKey)
                 .collect(Collectors.toSet());
-
         for (Coordinates cords : activeWhites) {
             boolean typeFlag = false, boardFlag = true;
 

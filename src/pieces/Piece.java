@@ -54,7 +54,6 @@ public abstract class Piece {
     }
 
     public List<Coordinates> straightMoveSteps(Coordinates to) {
-        System.out.println("every from  " + this.coordinates);
         int fileFrom = this.coordinates.file.ordinal(),
                 fileTo = to.file.ordinal(),
                 rankFrom = this.coordinates.rank,
