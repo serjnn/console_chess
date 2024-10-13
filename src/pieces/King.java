@@ -11,9 +11,9 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isMoveInvalidForThisType( Coordinates to) {
+    public boolean isMoveValidForThisType( Coordinates to) {
         if (castling) {
-            return false;
+            return true;
         }
 
         int fileFrom = this.coordinates.file.ordinal(),
@@ -21,14 +21,14 @@ public class King extends Piece {
                 rankFrom = this.coordinates.rank,
                 rankTo = to.rank;
 
-        return !((fileFrom - 1 == fileTo ||
+        return (fileFrom - 1 == fileTo ||
                 fileFrom + 1 == fileTo ||
                 fileFrom == fileTo) &&
                 (
                         rankFrom - 1 == rankTo ||
                                 rankFrom + 1 == rankTo ||
                                 rankFrom == rankTo
-                ));
+                );
     }
 
     @Override

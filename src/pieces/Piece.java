@@ -16,7 +16,7 @@ public abstract class Piece {
     }
 
 
-    public abstract boolean isMoveInvalidForThisType(Coordinates to);
+    public abstract boolean isMoveValidForThisType(Coordinates to);
 
     public abstract List<Coordinates> everyStepToPoint(Coordinates to);
 

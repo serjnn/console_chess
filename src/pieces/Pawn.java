@@ -11,10 +11,10 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveValidForThisType(Coordinates to) {
         if (pawnPeacefulMove) {
             pawnPeacefulMove = false;
-            return false;
+            return true;
         }
 
         int fileFrom = this.coordinates.file.ordinal(),
@@ -30,7 +30,7 @@ public class Pawn extends Piece {
                 color == Color.WHITE ?
                         rankTo == rankFrom + 1 :
                         rankTo == rankFrom - 1;
-        return !(fileCheck && rankCheck);
+        return fileCheck && rankCheck;
 
     }
 

@@ -16,5 +16,7 @@ public class Main {
         game.gameLoop(board);
 
     }
+    //TODO add everyone to active if king steps over middle of desc
+    //TODO remove redundant piece and from in methods' params
 
 }

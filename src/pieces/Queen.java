@@ -8,16 +8,16 @@ public class Queen extends Piece {
     }
 
     @Override
-    public boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveValidForThisType(Coordinates to) {
         int fileFrom = this.coordinates.file.ordinal(),
                 fileTo = to.file.ordinal(),
                 rankFrom = this.coordinates.rank,
                 rankTo = to.rank;
         return (Math.abs(fileFrom - fileTo)
-                != Math.abs(rankFrom - rankTo))
-                &&
-                ( fileFrom != fileTo && rankFrom != rankTo)
-                ;
+                == Math.abs(rankFrom - rankTo))
+                ||
+                ( fileFrom == fileTo || rankFrom == rankTo);
+
     }
 
     @Override

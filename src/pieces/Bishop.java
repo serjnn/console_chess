@@ -9,9 +9,9 @@ public class Bishop extends Piece {
 
 
     @Override
-    public boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveValidForThisType(Coordinates to) {
         return Math.abs(this.coordinates.file.ordinal() - to.file.ordinal())
-                != Math.abs(this.coordinates.rank - to.rank);
+                == Math.abs(this.coordinates.rank - to.rank);
     }
 
 

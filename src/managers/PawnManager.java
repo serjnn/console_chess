@@ -29,6 +29,7 @@ public class PawnManager {
                 && canPawnPeacefullyMove(piece, to, board)) {
             pawnPeacefulMove = true;
 
+
         }
 
     }
@@ -58,7 +59,10 @@ public class PawnManager {
                         rankTo == rankFrom + 1 :
                 rankTo == rankFrom - possibleDistance
                         || rankTo == rankFrom - 1;
-
+        System.out.println(fileCheck);
+        System.out.println(rankCheck);
+        System.out.println(emptySquareCheck);
+        System.out.println(emptyNextSquareCheck);
         return fileCheck && rankCheck && emptyNextSquareCheck
                 && emptySquareCheck;
 

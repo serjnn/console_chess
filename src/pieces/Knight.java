@@ -9,16 +9,16 @@ public class Knight extends Piece {
     }
 
     @Override
-    public boolean isMoveInvalidForThisType(Coordinates to) {
+    public boolean isMoveValidForThisType(Coordinates to) {
         int fileFrom = this.coordinates.file.ordinal(),
                 fileTo = to.file.ordinal(),
                 rankFrom = this.coordinates.rank,
                 rankTo = to.rank;
-        return !(((fileTo == fileFrom + 1 || fileTo == fileFrom - 1) && (rankTo ==
+        return ((fileTo == fileFrom + 1 || fileTo == fileFrom - 1) && (rankTo ==
                 rankFrom + 2 || rankTo == rankFrom - 2))
                 ||
                 ((rankTo == rankFrom + 1 || rankTo == rankFrom - 1) && (fileTo ==
-                        fileFrom + 2 || fileTo == fileFrom - 2)));
+                        fileFrom + 2 || fileTo == fileFrom - 2));
     }
 
     @Override

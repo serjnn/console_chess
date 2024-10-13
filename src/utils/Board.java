@@ -67,7 +67,7 @@ public class Board {
 
         //kings
 
-        setPiece(new Coordinates(File.E, 1), new King(Color.WHITE, new Coordinates(File.E, 1)));
+        setPiece(new Coordinates(File.D, 4), new King(Color.WHITE, new Coordinates(File.E, 1)));
         setPiece(new Coordinates(File.E, 8), new King(Color.BLACK, new Coordinates(File.E, 8)));
     }
 
@@ -177,7 +177,7 @@ public class Board {
         activeBlacks = activeBlacks.stream().filter(map::containsKey).collect(Collectors.toSet());
         for (Coordinates cords : activeBlacks) {
             Piece piece = map.get(cords);
-            if (!piece.isMoveInvalidForThisType(whiteKingCoords)) {
+            if (piece.isMoveValidForThisType(whiteKingCoords)) {
                 typeFlag = true;
             }
 
@@ -207,7 +207,7 @@ public class Board {
             if (piece.color == Color.BLACK) {
                 continue;
             }
-            if (!piece.isMoveInvalidForThisType(blackKingCoords)) {
+            if (piece.isMoveValidForThisType(blackKingCoords)) {
                 typeFlag = true;
             }
             try {

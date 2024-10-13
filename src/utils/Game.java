@@ -62,7 +62,7 @@ public static boolean haveBlackKingMoved =false;
             pawnManager.checkForPeacefulMove(piece,from,to,board);
             kingManager.checkForCastling(piece,to,board);
             try {
-                if (piece.isMoveInvalidForThisType(to)) {
+                if (!piece.isMoveValidForThisType(to)) {
                     System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
                             " can't move like that" + ANSI_RESET);
 
