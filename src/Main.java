@@ -1,7 +1,7 @@
-package utils;
-
 import managers.KingManager;
 import managers.PawnManager;
+import utils.Board;
+import utils.Game;
 
 public class Main {
     public static void main(String[] args) {

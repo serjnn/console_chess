@@ -1,9 +1,9 @@
 package managers;
 
 
-import pieces.Color;
+import pieces.enums.Color;
 import pieces.Coordinates;
-import pieces.File;
+import pieces.enums.File;
 import pieces.Piece;
 import utils.Board;
 
@@ -57,12 +57,11 @@ public class KingManager {
         if (piece.getClass().getSimpleName().equals("King")) {
             if (piece.color == Color.WHITE) {
                 whiteKingCoords = to;
-                haveWhiteKingMoved = true;
             } else {
                 blackKingCoords = to;
-                haveWhiteKingMoved = true;
 
             }
+            haveWhiteKingMoved = true;
 
         }
 
@@ -111,7 +110,6 @@ public class KingManager {
 
                         )
                         .allMatch(board::isSquareEmpty);
-        System.out.println(isThereEmpty);
         if (!isThereEmpty){return;}
         File gottenFile = isThisShiftToRight ? File.values()[fileTo - 1] : File.values()[fileTo + 1];
         board.removePieceFromSquare(mockingRook.coordinates);

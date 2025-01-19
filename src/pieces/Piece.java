@@ -1,6 +1,9 @@
 package pieces;
 
 
+import pieces.enums.Color;
+import pieces.enums.File;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

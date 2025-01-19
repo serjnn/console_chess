@@ -1,8 +1,8 @@
 package utils;
 
-import pieces.Color;
+import pieces.enums.Color;
 import pieces.Coordinates;
-import pieces.File;
+import pieces.enums.File;
 import pieces.Piece;
 
 import static utils.Game.ANSI_RESET;

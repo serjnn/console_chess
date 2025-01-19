@@ -1,6 +1,6 @@
 package managers;
 
-import pieces.Color;
+import pieces.enums.Color;
 import pieces.Coordinates;
 import pieces.Piece;
 import pieces.Queen;
@@ -24,7 +24,7 @@ public class PawnManager {
     }
 
 
-    public void checkForPeacefulMove(Piece piece, Coordinates from, Coordinates to, Board board) {
+    public void checkForPeacefulMove(Piece piece, Coordinates to, Board board) {
         if (piece.getClass().getSimpleName().equals("Pawn")
                 && canPawnPeacefullyMove(piece, to, board)) {
             pawnPeacefulMove = true;
@@ -59,10 +59,6 @@ public class PawnManager {
                         rankTo == rankFrom + 1 :
                 rankTo == rankFrom - possibleDistance
                         || rankTo == rankFrom - 1;
-        System.out.println(fileCheck);
-        System.out.println(rankCheck);
-        System.out.println(emptySquareCheck);
-        System.out.println(emptyNextSquareCheck);
         return fileCheck && rankCheck && emptyNextSquareCheck
                 && emptySquareCheck;
 

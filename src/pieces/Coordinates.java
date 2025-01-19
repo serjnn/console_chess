@@ -1,5 +1,7 @@
 package pieces;
 
+import pieces.enums.File;
+
 import java.util.Objects;
 
 public class Coordinates {

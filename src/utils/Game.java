@@ -2,9 +2,9 @@ package utils;
 
 import managers.KingManager;
 import managers.PawnManager;
-import pieces.Color;
+import pieces.enums.Color;
 import pieces.Coordinates;
-import pieces.File;
+import pieces.enums.File;
 import pieces.Piece;
 
 import java.util.Scanner;
@@ -16,14 +16,15 @@ public class Game {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
-public static boolean haveWhiteKingMoved = false;
-public static boolean haveBlackKingMoved =false;
+    public static boolean haveWhiteKingMoved = false;
+    public static boolean haveBlackKingMoved = false;
+
     public static int moveCount = 0;
     public static Color moveColor = Color.WHITE;
 
-    private final KingManager  kingManager;
+    private final KingManager kingManager;
 
-    private  final PawnManager pawnManager;
+    private final PawnManager pawnManager;
 
     public Game(KingManager kingManager, PawnManager pawnManager) {
         this.kingManager = kingManager;
@@ -59,8 +60,8 @@ public static boolean haveBlackKingMoved =false;
                 continue;
             }
             Piece piece = board.getPiece(from);
-            pawnManager.checkForPeacefulMove(piece,from,to,board);
-            kingManager.checkForCastling(piece,to,board);
+            pawnManager.checkForPeacefulMove(piece, to, board);
+            kingManager.checkForCastling(piece, to, board);
             try {
                 if (!piece.isMoveValidForThisType(to)) {
                     System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
@@ -74,7 +75,7 @@ public static boolean haveBlackKingMoved =false;
                 continue;
             }
             try {
-                board.isMoveValidOnBoard(piece,  to);
+                board.isMoveValidOnBoard(piece, to);
             } catch (RuntimeException re) {
                 System.out.println(ANSI_RED + re.getMessage() + ANSI_RESET);
                 continue;
@@ -92,7 +93,7 @@ public static boolean haveBlackKingMoved =false;
 
 
             pawnManager.checkForUpgrade(piece, to, board);
-            kingManager.checkForChangeKingCoords(piece,to);
+            kingManager.checkForChangeKingCoords(piece, to);
 
 
         }
