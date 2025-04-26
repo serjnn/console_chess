@@ -53,10 +53,10 @@ public class Game {
                                 .toUpperCase())
                         , Character.getNumericValue(move.charAt(4)));
             } catch (StringIndexOutOfBoundsException se) {
-                System.out.println(ANSI_RED + "Please enter some" + ANSI_RESET);
+                System.out.println(ANSI_RED + "Please enter you're move" + ANSI_RESET);
                 continue;
             } catch (IllegalArgumentException e) {
-                System.out.println(ANSI_RED + "Please enter correct coords" + ANSI_RESET);
+                System.out.println(ANSI_RED + "Please enter correct coordinates" + ANSI_RESET);
                 continue;
             }
             Piece piece = board.getPiece(from);
@@ -70,7 +70,7 @@ public class Game {
                     continue;
                 }
             } catch (NullPointerException ne) {
-                System.out.println(ANSI_RED + "Chose correct piece" + ANSI_RESET);
+                System.out.println(ANSI_RED + "Choose correct piece" + ANSI_RESET);
 
                 continue;
             }
