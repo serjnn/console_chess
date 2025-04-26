@@ -101,13 +101,13 @@ public class Board {
 
         if (!isSquareEmpty(to) && !isItEnemy(to, Game.moveColor)) {
 
-            throw new ArithmeticException("You cant beat ur pieces");
+            throw new ArithmeticException("You can't beat your're pieces");
 
         }
 
 
         if (to.rank < 1 || to.rank > 8) {
-            throw new RuntimeException("You cant go outside the map");
+            throw new RuntimeException("You can't go outside the map");
 
         }
 
@@ -116,21 +116,21 @@ public class Board {
             if (piece.getClass().getSimpleName().equals("Pawn"))
                 if (piece.coordinates.file != to.file && !(isItEnemy(to, Game.moveColor))
                         || piece.coordinates.file == to.file && !isSquareEmpty(to)) {
-                    throw new RuntimeException("this pawn cant move that way");
+                    throw new RuntimeException("This pawn can't move that way");
 
 
                 }
         } catch (NullPointerException np) {
-            throw new RuntimeException("You cant move like that cuz pawn is not attacking");
+            throw new RuntimeException("You can't move like that because pawn is not attacking");
         }
 
         try {
             if (getPieceColor(piece.coordinates) != Game.moveColor) {
-                throw new ArithmeticException("that piece isn't yours");
+                throw new ArithmeticException("That piece isn't yours");
 
             }
         } catch (NullPointerException np) {
-            throw new RuntimeException("there is empty from where u wanna move"
+            throw new RuntimeException("There is empty from where you wanna move"
             );
 
         }
