@@ -1,31 +1,20 @@
 package utils;
 
-import managers.KingManager;
 import pieces.*;
 import pieces.enums.Color;
 import pieces.enums.File;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static managers.KingManager.*;
-import static utils.Game.moveCount;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Board {
 
-
     private final Map<Coordinates, Piece> map = new HashMap<>();
-
-    private Set<Coordinates> activeWhites = new HashSet<>();
-
-    private Set<Coordinates> activeBlacks = new HashSet<>();
-
 
     public void setPiece(Coordinates coordinates, Piece piece) {
         piece.coordinates = coordinates;
         map.put(coordinates, piece);
     }
-
 
     public boolean isSquareEmpty(Coordinates coordinates) {
         return !map.containsKey(coordinates);
@@ -33,9 +22,7 @@ public class Board {
 
     public Piece getPiece(Coordinates coordinates) {
         return map.get(coordinates);
-
     }
-
 
     public void setupDefault() {
         //set pawns
@@ -44,7 +31,6 @@ public class Board {
             setPiece(new Coordinates(file, 7), new Pawn(Color.BLACK, new Coordinates(file, 7)));
         }
 
-
         //rooks
         setPiece(new Coordinates(File.A, 1), new Rook(Color.WHITE, new Coordinates(File.A, 1)));
         setPiece(new Coordinates(File.H, 1), new Rook(Color.WHITE, new Coordinates(File.H, 1)));
@@ -52,14 +38,14 @@ public class Board {
         setPiece(new Coordinates(File.H, 8), new Rook(Color.BLACK, new Coordinates(File.H, 8)));
 
         //knights
-        setPiece(new Coordinates(File.G, 1), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
-        setPiece(new Coordinates(File.B, 1), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
+        setPiece(new Coordinates(File.B, 1), new Knight(Color.WHITE, new Coordinates(File.B, 1)));
+        setPiece(new Coordinates(File.G, 1), new Knight(Color.WHITE, new Coordinates(File.G, 1)));
         setPiece(new Coordinates(File.B, 8), new Knight(Color.BLACK, new Coordinates(File.B, 8)));
         setPiece(new Coordinates(File.G, 8), new Knight(Color.BLACK, new Coordinates(File.G, 8)));
 
         //bishops
-        setPiece(new Coordinates(File.F, 1), new Bishop(Color.WHITE, new Coordinates(File.C, 1)));
-        setPiece(new Coordinates(File.C, 1), new Bishop(Color.WHITE, new Coordinates(File.F, 1)));
+        setPiece(new Coordinates(File.C, 1), new Bishop(Color.WHITE, new Coordinates(File.C, 1)));
+        setPiece(new Coordinates(File.F, 1), new Bishop(Color.WHITE, new Coordinates(File.F, 1)));
         setPiece(new Coordinates(File.C, 8), new Bishop(Color.BLACK, new Coordinates(File.C, 8)));
         setPiece(new Coordinates(File.F, 8), new Bishop(Color.BLACK, new Coordinates(File.F, 8)));
 
@@ -68,89 +54,13 @@ public class Board {
         setPiece(new Coordinates(File.D, 8), new Queen(Color.BLACK, new Coordinates(File.D, 8)));
 
         //kings
-
         setPiece(new Coordinates(File.E, 1), new King(Color.WHITE, new Coordinates(File.E, 1)));
         setPiece(new Coordinates(File.E, 8), new King(Color.BLACK, new Coordinates(File.E, 8)));
     }
 
-
-    private Color getPieceColor(Coordinates from) {
-        return map.get(from).color;
-    }
-
-    private boolean isItEnemy(Coordinates to, Color moveColor) {
-        return map.get(to).color != moveColor;
-
-    }
-
     public void removePieceFromSquare(Coordinates coordinates) {
         map.remove(coordinates);
-
     }
-
-    public void isMoveValidOnBoard(Piece piece, Coordinates to) throws
-            RuntimeException {
-        if (castling) {
-            castling = false;
-            return;
-        }
-        List<Coordinates> steps = piece.everyStepToPoint(to);
-        if (!isWayToPointEmpty(steps)) {
-            throw new RuntimeException("You cant go through piece");
-        }
-
-        if (!isSquareEmpty(to) && !isItEnemy(to, Game.moveColor)) {
-
-            throw new ArithmeticException("You can't beat your're pieces");
-
-        }
-
-
-        if (to.rank < 1 || to.rank > 8) {
-            throw new RuntimeException("You can't go outside the map");
-
-        }
-
-
-        try {
-            if (piece.getClass().getSimpleName().equals("Pawn"))
-                if (piece.coordinates.file != to.file && !(isItEnemy(to, Game.moveColor))
-                        || piece.coordinates.file == to.file && !isSquareEmpty(to)) {
-                    throw new RuntimeException("This pawn can't move that way");
-
-
-                }
-        } catch (NullPointerException np) {
-            throw new RuntimeException("You can't move like that because pawn is not attacking");
-        }
-
-        try {
-            if (getPieceColor(piece.coordinates) != Game.moveColor) {
-                throw new ArithmeticException("That piece isn't yours");
-
-            }
-        } catch (NullPointerException np) {
-            throw new RuntimeException("There is empty from where you wanna move"
-            );
-
-        }
-
-
-    }
-
-
-    private boolean isWayToPointEmpty(List<Coordinates> steps) {
-        steps = steps.subList(0, steps.size() - 1);
-        for (Coordinates cords : steps) {
-            if (map.containsKey(cords)) {
-                return false;
-
-            }
-        }
-        return true;
-
-    }
-
 
     public boolean isSquareWhite(Coordinates coordinates) {
         return ((coordinates.file.ordinal() + 1) % 2 == 0 && coordinates.rank % 2 == 0) || (
@@ -158,122 +68,138 @@ public class Board {
         );
     }
 
-    private void addToActive(Coordinates to) {
-        Piece piece = map.get(to);
-        if (piece.color == Color.WHITE) {
-            activeWhites.add(to);
-            activeBlacks.remove(to);
-
-        } else {
-            activeBlacks.add(to);
-            activeWhites.remove(to);
+    public boolean isKingUnderCheck(Color kingColor) {
+        Coordinates kingCoords = null;
+        for (Map.Entry<Coordinates, Piece> entry : map.entrySet()) {
+            Piece piece = entry.getValue();
+            if (piece instanceof King && piece.color == kingColor) {
+                kingCoords = entry.getKey();
+                break;
+            }
+        }
+        if (kingCoords == null) {
+            return false;
         }
 
-    }
-
-
-    private boolean isWhiteKingUnderCheck() {
-
-        boolean typeFlag = false, boardFlag = true;
-
-        activeBlacks = activeBlacks.stream().filter(map::containsKey).collect(Collectors.toSet());
-        for (Coordinates cords : activeBlacks) {
-            Piece piece = map.get(cords);
-            if (piece.isMoveValidForThisType(whiteKingCoords)) {
-                typeFlag = true;
-            }
-
-            try {
-                isMoveValidOnBoard(piece,  whiteKingCoords);
-            } catch (ArithmeticException ae) {
-                System.out.print("");
-            } catch (RuntimeException re) {
-                boardFlag = false;
-            }
-
-            if (boardFlag && typeFlag) {
-                return true;
+        for (Map.Entry<Coordinates, Piece> entry : map.entrySet()) {
+            Piece piece = entry.getValue();
+            if (piece.color != kingColor) {
+                if (canPieceAttackSquare(piece, kingCoords)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    private boolean isBlackKingUnderCheck() {
-        activeWhites = activeWhites.stream()
-                .filter(map::containsKey)
-                .collect(Collectors.toSet());
-        for (Coordinates cords : activeWhites) {
-            boolean typeFlag = false, boardFlag = true;
+    private boolean canPieceAttackSquare(Piece piece, Coordinates target) {
+        if (piece.coordinates.equals(target)) {
+            return false;
+        }
+        if (target.isOutOfBounds()) {
+            return false;
+        }
+        if (piece instanceof Pawn) {
+            int fileFrom = piece.coordinates.file.ordinal();
+            int fileTo = target.file.ordinal();
+            int rankFrom = piece.coordinates.rank;
+            int rankTo = target.rank;
+            boolean fileCheck = fileTo == fileFrom - 1 || fileTo == fileFrom + 1;
+            boolean rankCheck = piece.color == Color.WHITE ? rankTo == rankFrom + 1 : rankTo == rankFrom - 1;
+            return fileCheck && rankCheck;
+        }
 
-            Piece piece = map.get(cords);
-            if (piece.color == Color.BLACK) {
-                continue;
-            }
-            if (piece.isMoveValidForThisType(blackKingCoords)) {
-                typeFlag = true;
-            }
-            try {
-                isMoveValidOnBoard(piece,  blackKingCoords);
-            } catch (ArithmeticException ae) {
-                System.out.print("");
-            } catch (RuntimeException re) {
-                boardFlag = false;
-            }
+        if (!piece.isMoveValidForThisType(target)) {
+            return false;
+        }
 
-            if (boardFlag && typeFlag) {
-                return true;
+        List<Coordinates> steps = piece.everyStepToPoint(target);
+        for (int i = 0; i < steps.size() - 1; i++) {
+            if (!isSquareEmpty(steps.get(i))) {
+                return false;
             }
         }
-        return false;
-
+        return true;
     }
 
+    public boolean wouldMovePutKingInCheck(Coordinates from, Coordinates to, Color playerColor) {
+        Piece movingPiece = getPiece(from);
+        Piece originalTargetPiece = getPiece(to);
 
-    public boolean amIUnderCheck(Piece piece, Coordinates from, Coordinates to) {
-        Piece previousPiece = map.get(to);
-
-        if (piece.getClass().getSimpleName().equals("King")) {
-            KingManager.mockKingCoords(piece.color, from, to);
-        }
-
-        mockMove(piece, from, to);
-
-
-        boolean result = Game.moveColor == Color.WHITE ?
-                isWhiteKingUnderCheck() : isBlackKingUnderCheck();
-
-
-        if (piece.getClass().getSimpleName().equals("King")) {
-            KingManager.rollbackKingCoords(piece.color);
-        }
-        rollback(piece, from, to);
-
-        if (previousPiece != null) {
-            setPiece(to, previousPiece); // revive piece that could be slain by mocking piece
-        }
-        return result;
-
-    }
-
-
-    private void rollback(Piece piece, Coordinates from, Coordinates to) {
-        map.remove(to);
-        setPiece(from, piece);
-    }
-
-    private void mockMove(Piece piece, Coordinates from, Coordinates to) {
+        // Simulate move
         map.remove(from);
-        setPiece(to, piece);
+        map.put(to, movingPiece);
+        Coordinates originalCoords = movingPiece.coordinates;
+        movingPiece.coordinates = to;
+
+        // Castling rook simulation
+        boolean isCastling = false;
+        Coordinates rookFrom = null;
+        Coordinates rookTo = null;
+        Piece rook = null;
+        if (movingPiece instanceof King && Math.abs(from.file.ordinal() - to.file.ordinal()) == 2) {
+            isCastling = true;
+            boolean isRight = to.file.ordinal() > from.file.ordinal();
+            int rank = from.rank;
+            rookFrom = new Coordinates(isRight ? File.H : File.A, rank);
+            rookTo = new Coordinates(isRight ? File.F : File.D, rank);
+            rook = getPiece(rookFrom);
+            if (rook != null) {
+                map.remove(rookFrom);
+                map.put(rookTo, rook);
+                rook.coordinates = rookTo;
+            }
+        }
+
+        boolean inCheck = isKingUnderCheck(playerColor);
+
+        // Rollback
+        movingPiece.coordinates = originalCoords;
+        map.put(from, movingPiece);
+        if (originalTargetPiece != null) {
+            map.put(to, originalTargetPiece);
+        } else {
+            map.remove(to);
+        }
+
+        if (isCastling && rook != null) {
+            rook.coordinates = rookFrom;
+            map.put(rookFrom, rook);
+            map.remove(rookTo);
+        }
+
+        return inCheck;
     }
 
-    public void commitMove(Piece piece, Coordinates from, Coordinates to) {
+    public void commitMove(Coordinates from, Coordinates to) {
+        Piece piece = getPiece(from);
+        if (piece == null) return;
 
         removePieceFromSquare(from);
-        setPiece(to, piece);
-        addToActive(to);
-        moveCount++;
-        Game.moveColor = moveCount % 2 == 0 ? Color.WHITE : Color.BLACK;
+
+        // Castling rook movement
+        if (piece instanceof King && Math.abs(from.file.ordinal() - to.file.ordinal()) == 2) {
+            boolean isRight = to.file.ordinal() > from.file.ordinal();
+            int rank = from.rank;
+            Coordinates rookFrom = new Coordinates(isRight ? File.H : File.A, rank);
+            Coordinates rookTo = new Coordinates(isRight ? File.F : File.D, rank);
+            Piece rook = map.remove(rookFrom);
+            if (rook != null) {
+                rook.coordinates = rookTo;
+                rook.hasMoved = true;
+                map.put(rookTo, rook);
+            }
+        }
+
+        piece.coordinates = to;
+        piece.hasMoved = true;
+        map.put(to, piece);
+
+        // Pawn promotion to Queen
+        if (piece instanceof Pawn && (to.rank == 1 || to.rank == 8)) {
+            Piece promotedQueen = new Queen(piece.color, to);
+            promotedQueen.hasMoved = true;
+            map.put(to, promotedQueen);
+        }
     }
-
-
 }

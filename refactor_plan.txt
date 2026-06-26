@@ -1,0 +1,143 @@
+================================================================================
+                    CONSOLE CHESS REFACTORING PLAN
+================================================================================
+
+This document outlines the architectural changes, bug fixes, and code quality
+improvements proposed for the console chess application.
+
+--------------------------------------------------------------------------------
+1. CURRENT ARCHITECTURE & DESIGN FLAWS (CODE SMELLS)
+--------------------------------------------------------------------------------
+
+* Global Static State & Tight Coupling:
+  - Game variables (haveWhiteKingMoved, haveBlackKingMoved, moveCount, moveColor)
+    are public static in utils.Game.
+  - KingManager variables (whiteKingCoords, blackKingCoords, castling) and
+    PawnManager variables (pawnPeacefulMove) are static.
+  - Pieces (e.g., King, Pawn) statically import and read/write these managers'
+    static flags during validation (e.g., King.isMoveValidForThisType accesses 
+    KingManager.castling; Pawn.isMoveValidForThisType resets PawnManager.pawnPeacefulMove).
+  - Impact: Prevents concurrent games, makes unit testing difficult, and causes
+    temporal coupling where validations must be executed in a strict order to
+    avoid corrupting static variables.
+
+* Incomplete OOP and Weak Separation of Concerns:
+  - The pieces themselves should contain the rules of their movement, but they
+    are currently dependent on managers modifying static state.
+  - Board is a mix of a data structure (holds the piece map) and validator.
+  - Game manages console I/O, parsing, execution loop, and check validations.
+
+* Misuse of Exception Types for Control Flow:
+  - ArithmeticException is thrown for domain errors (e.g., "You can't beat your
+    own pieces", "That piece isn't yours").
+  - General RuntimeException and NullPointerException are used for business
+    logic validations, which makes error handling fragile and non-descriptive.
+
+* Formatting and Typos:
+  - Grammatical typos exist in messages (e.g., "Please enter you're move",
+    "You cant go through piece", "You can't beat your're pieces").
+
+--------------------------------------------------------------------------------
+2. LOGICAL BUGS IDENTIFIED
+--------------------------------------------------------------------------------
+
+* Knight and Bishop Coordinates Mismatch on Setup:
+  - In Board.setupDefault(), knights and bishops are initialized with swapped
+    internal coordinates:
+      - setPiece(G1, new Knight(..., B1))
+      - setPiece(B1, new Knight(..., G1))
+      - setPiece(F1, new Bishop(..., C1))
+      - setPiece(C1, new Bishop(..., F1))
+  - Impact: Once these pieces try to move, validation fails or is calculated
+    from the incorrect starting square.
+
+* Check/Checkmate Validation Bug (Unmoved Pieces):
+  - Board uses activeWhites and activeBlacks Sets to check if a King is under check.
+  - However, these Sets are only populated during Board.commitMove().
+  - Impact: At the start of the game, these sets are completely empty. Any unmoved
+    piece cannot check the opponent's king. For example, if a pawn moves out of the
+    way, an unmoved Bishop/Rook/Queen won't trigger a check.
+
+* King Castling Flag Bug:
+  - In KingManager.checkForChangeKingCoords(), when any king moves:
+    haveWhiteKingMoved = true;
+  - Impact: If the black king moves, the white king is incorrectly flagged as
+    having moved, preventing White from castling.
+
+* Pawn Double-Move Bug:
+  - PawnManager.canPawnPeacefullyMove() allows a 2-square move if rankFrom is 2 
+    or 7, without validating color:
+    int possibleDistance = rankFrom == 2 || rankFrom == 7 ? 2 : 1;
+  - Impact: A white pawn that has reached rank 7 could theoretically perform a 
+    double move (which is invalid and would go out of bounds).
+
+* Same-Square Move Bug:
+  - King.isMoveValidForThisType() returns true if the target coordinates are the 
+    same as current coordinates, allowing a king to make a "pass" move.
+
+--------------------------------------------------------------------------------
+3. PROPOSED TARGET ARCHITECTURE
+--------------------------------------------------------------------------------
+
+To make the codebase testable, modular, and robust, we will implement the
+following structure:
+
+  +------------------+
+  |    Main Entry    | ---> Instantiates Game
+  +------------------+
+           |
+           v
+  +------------------+
+  |    Game Loop     | ---> Handles console input/output, orchestrates turns
+  +------------------+
+       |        |
+       |        v
+       |  +------------------+
+       |  |   Board Model    | ---> Stores board state (Map<Coordinates, Piece>),
+       |  +------------------+      tracks king positions, manages piece placement.
+       |        |
+       v        v
+  +------------------+
+  | MoveValidator    | ---> State-free check/castling/pawn validation,
+  +------------------+      queries Board & Piece rule definitions.
+
+* Coordinates: Convert to a Java `record` (if using Java 14+) or make it fully
+  immutable with clear helper methods like isOutOfBounds(), getFileDistance(),
+  and getRankDistance().
+
+* Piece Rules:
+  - Keep pieces stateless with respect to the board.
+  - Each piece type (Pawn, Rook, Knight, Bishop, Queen, King) should define its
+    movement rules (e.g., coordinates translation, vector rules) without reading
+    static manager flags.
+
+--------------------------------------------------------------------------------
+4. REFACTORING ROADMAP (STEP-BY-STEP)
+--------------------------------------------------------------------------------
+
+PHASE 1: Bug Fixes (Preserving Current Design for Safety First)
+  1. Correct the knight/bishop coordinates in Board.setupDefault().
+  2. Fix haveWhiteKingMoved bug in KingManager.checkForChangeKingCoords().
+  3. Improve Pawn double-move check by separating color start ranks.
+  4. Fix same-square move for King/other pieces.
+  5. Refactor check validation in Board to scan the piece map directly instead of
+     relying on the buggy activeWhites/activeBlacks sets.
+
+PHASE 2: Remove Static State & Encapsulate Game State
+  1. Remove static qualifiers from Game state variables (moveColor, moveCount, etc.).
+  2. Package King/Pawn status flags (e.g., haveMoved, castling history) inside the
+     Piece classes or a stateful GameSession object.
+  3. Turn KingManager and PawnManager into instance-based classes or integrate
+     them directly into a stateless validation service.
+
+PHASE 3: Clean up Domain Exceptions & Input Validation
+  1. Create ChessException (or InvalidMoveException) to replace ArithmeticException
+     and generic RuntimeExceptions.
+  2. Improve the input parser in Game to safely parse move commands (e.g., "e2 e4"
+     or "e2e4") and validate format before performing actions.
+
+PHASE 4: Code Quality & Readability
+  1. Fix typos in terminal logs.
+  2. Simplify method signatures (e.g., remove redundant Piece/Coordinates arguments).
+  3. Convert Coordinates into a clean, immutable object or Java Record.
+================================================================================

@@ -1,7 +1,6 @@
 package pieces;
 
 import pieces.enums.Color;
-
 import java.util.List;
 
 public class Bishop extends Piece {
@@ -9,17 +8,16 @@ public class Bishop extends Piece {
         super(color, coordinates);
     }
 
-
     @Override
     public boolean isMoveValidForThisType(Coordinates to) {
-        return Math.abs(this.coordinates.file.ordinal() - to.file.ordinal())
-                == Math.abs(this.coordinates.rank - to.rank);
+        if (this.coordinates.equals(to)) {
+            return false;
+        }
+        return this.coordinates.getFileDistance(to) == this.coordinates.getRankDistance(to);
     }
-
 
     @Override
     public List<Coordinates> everyStepToPoint(Coordinates to) {
         return diagonalMoveSteps(to);
     }
-
 }

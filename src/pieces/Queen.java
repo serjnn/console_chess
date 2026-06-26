@@ -1,7 +1,6 @@
 package pieces;
 
 import pieces.enums.Color;
-
 import java.util.List;
 
 public class Queen extends Piece {
@@ -11,23 +10,17 @@ public class Queen extends Piece {
 
     @Override
     public boolean isMoveValidForThisType(Coordinates to) {
-        int fileFrom = this.coordinates.file.ordinal(),
-                fileTo = to.file.ordinal(),
-                rankFrom = this.coordinates.rank,
-                rankTo = to.rank;
-        return (Math.abs(fileFrom - fileTo)
-                == Math.abs(rankFrom - rankTo))
-                ||
-                ( fileFrom == fileTo || rankFrom == rankTo);
-
+        if (this.coordinates.equals(to)) {
+            return false;
+        }
+        int fileDist = this.coordinates.getFileDistance(to);
+        int rankDist = this.coordinates.getRankDistance(to);
+        return (fileDist == rankDist) || (fileDist == 0 || rankDist == 0);
     }
 
     @Override
     public List<Coordinates> everyStepToPoint(Coordinates to) {
-
         return this.coordinates.file == to.file || this.coordinates.rank == to.rank ?
                 straightMoveSteps(to) : diagonalMoveSteps(to);
     }
-
-
 }
