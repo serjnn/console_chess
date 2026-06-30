@@ -1,6 +1,5 @@
 package pieces;
 
-
 import pieces.enums.Color;
 import pieces.enums.File;
 
@@ -12,12 +11,12 @@ import java.util.stream.IntStream;
 public abstract class Piece {
     public Color color;
     public Coordinates coordinates;
+    public boolean hasMoved = false;
 
     public Piece(Color color, Coordinates coordinates) {
         this.color = color;
         this.coordinates = coordinates;
     }
-
 
     public abstract boolean isMoveValidForThisType(Coordinates to);
 
@@ -37,9 +36,7 @@ public abstract class Piece {
                         (Math.min(fileFrom, fileTo), Math.max(fileTo, fileFrom))
                 .boxed().toList());
 
-
         if (fileFrom > fileTo) {
-
             Collections.reverse(fileChanges);
         }
         if (rankFrom > rankTo) {
@@ -51,7 +48,6 @@ public abstract class Piece {
                     new Coordinates(File.values()[fileChanges.get(i)],
                             rankChanges.get(i))
             );
-
         }
         return steps.subList(1, steps.size());
     }
@@ -68,37 +64,31 @@ public abstract class Piece {
                     .boxed().toList());
             if (rankFrom > rankTo) {
                 Collections.reverse(rankChanges);
-
             }
             return rankChanges.stream()
                     .map(rank -> new Coordinates(File.values()[fileFrom], rank)
-
                     ).toList().subList(1, rankChanges.size());
         } else {
-            {
-                List<Integer> fileChanges = new ArrayList<>(IntStream.rangeClosed
-                                (Math.min(fileFrom, fileTo),
-                                        Math.max(fileTo, fileFrom))//
-                        .boxed().toList());
-                if (fileFrom > fileTo) {
-                    Collections.reverse(fileChanges);
-
-                }
-                return fileChanges.stream()
-                        .map(file -> new Coordinates(File.values()[file], rankFrom)
-
-                        ).toList().subList(1, fileChanges.size());
+            List<Integer> fileChanges = new ArrayList<>(IntStream.rangeClosed
+                            (Math.min(fileFrom, fileTo),
+                                    Math.max(fileTo, fileFrom))
+                    .boxed().toList());
+            if (fileFrom > fileTo) {
+                Collections.reverse(fileChanges);
             }
+            return fileChanges.stream()
+                    .map(file -> new Coordinates(File.values()[file], rankFrom)
+                    ).toList().subList(1, fileChanges.size());
         }
     }
 
     @Override
     public String toString() {
         return "Piece{" +
-                "name= " + getClass().getSimpleName() +
+                "name=" + getClass().getSimpleName() +
                 ", color=" + color +
                 ", coordinates=" + coordinates +
+                ", hasMoved=" + hasMoved +
                 '}';
     }
-
 }

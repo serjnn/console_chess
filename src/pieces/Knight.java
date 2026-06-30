@@ -1,7 +1,6 @@
 package pieces;
 
 import pieces.enums.Color;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,22 +11,16 @@ public class Knight extends Piece {
 
     @Override
     public boolean isMoveValidForThisType(Coordinates to) {
-        int fileFrom = this.coordinates.file.ordinal(),
-                fileTo = to.file.ordinal(),
-                rankFrom = this.coordinates.rank,
-                rankTo = to.rank;
-        return ((fileTo == fileFrom + 1 || fileTo == fileFrom - 1) && (rankTo ==
-                rankFrom + 2 || rankTo == rankFrom - 2))
-                ||
-                ((rankTo == rankFrom + 1 || rankTo == rankFrom - 1) && (fileTo ==
-                        fileFrom + 2 || fileTo == fileFrom - 2));
+        if (this.coordinates.equals(to)) {
+            return false;
+        }
+        int fileDist = this.coordinates.getFileDistance(to);
+        int rankDist = this.coordinates.getRankDistance(to);
+        return (fileDist == 1 && rankDist == 2) || (fileDist == 2 && rankDist == 1);
     }
 
     @Override
     public List<Coordinates> everyStepToPoint(Coordinates to) {
         return new ArrayList<>(List.of(to));
-
     }
-
-
 }
