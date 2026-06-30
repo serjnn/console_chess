@@ -1,17 +1,27 @@
 package pieces;
 
 import pieces.enums.File;
-
 import java.util.Objects;
 
-public class Coordinates {
+public final class Coordinates {
     public final File file;
     public final int rank;
-
 
     public Coordinates(File file, int rank) {
         this.file = file;
         this.rank = rank;
+    }
+
+    public boolean isOutOfBounds() {
+        return rank < 1 || rank > 8;
+    }
+
+    public int getFileDistance(Coordinates other) {
+        return Math.abs(this.file.ordinal() - other.file.ordinal());
+    }
+
+    public int getRankDistance(Coordinates other) {
+        return Math.abs(this.rank - other.rank);
     }
 
     @Override
