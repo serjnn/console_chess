@@ -1,112 +1,89 @@
 package utils;
 
-import managers.KingManager;
-import managers.PawnManager;
 import pieces.enums.Color;
 import pieces.Coordinates;
 import pieces.enums.File;
-import pieces.Piece;
+import exceptions.ChessException;
 
 import java.util.Scanner;
 
-
 public class Game {
-
 
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
-    public static boolean haveWhiteKingMoved = false;
-    public static boolean haveBlackKingMoved = false;
+    private int moveCount = 0;
+    private Color moveColor = Color.WHITE;
 
-    public static int moveCount = 0;
-    public static Color moveColor = Color.WHITE;
+    public Game() {
+    }
 
-    private final KingManager kingManager;
-
-    private final PawnManager pawnManager;
-
-    public Game(KingManager kingManager, PawnManager pawnManager) {
-        this.kingManager = kingManager;
-        this.pawnManager = pawnManager;
+    @Deprecated
+    public Game(Object kingManager, Object pawnManager) {
+        // Kept for backward compatibility
     }
 
     public void gameLoop(Board board) {
-
+        Scanner scanner = new Scanner(System.in);
+        BoardConsoleRenderer view = new BoardConsoleRenderer();
 
         while (true) {
+            view.render(board, moveColor);
 
-            BoardConsoleRenderer view = new BoardConsoleRenderer();
-            view.render(board);
+            String move = scanner.nextLine().trim();
+            if (move.equalsIgnoreCase("exit") || move.equalsIgnoreCase("quit")) {
+                break;
+            }
 
-            Scanner scanner = new Scanner(System.in);
-            String move = scanner.nextLine();
             Coordinates from;
             Coordinates to;
             try {
-                from = new Coordinates(File
-                        .valueOf(String.valueOf(move.charAt(0))
-                                .toUpperCase())
-                        , Character.getNumericValue(move.charAt(1)));
-                to = new Coordinates(File
-                        .valueOf(String.valueOf(move.charAt(3))
-                                .toUpperCase())
-                        , Character.getNumericValue(move.charAt(4)));
-            } catch (StringIndexOutOfBoundsException se) {
-                System.out.println(ANSI_RED + "Please enter you're move" + ANSI_RESET);
+                // Normalize input by removing all spaces, tabs, and hyphens, and convert to lowercase.
+                String cleanMove = move.replaceAll("\\s+", "").replace("-", "").toLowerCase();
+                if (cleanMove.length() != 4) {
+                    throw new ChessException("Please enter your move in format 'e2 e4' or 'e2e4'");
+                }
+
+                from = parseCoordinates(cleanMove.charAt(0), cleanMove.charAt(1));
+                to = parseCoordinates(cleanMove.charAt(2), cleanMove.charAt(3));
+            } catch (ChessException ce) {
+                System.out.println(ANSI_RED + ce.getMessage() + ANSI_RESET);
                 continue;
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 System.out.println(ANSI_RED + "Please enter correct coordinates" + ANSI_RESET);
                 continue;
             }
-            Piece piece = board.getPiece(from);
-            pawnManager.checkForPeacefulMove(piece, to, board);
-            kingManager.checkForCastling(piece, to, board);
-            try {
-                if (!piece.isMoveValidForThisType(to)) {
-                    System.out.println(ANSI_RED + piece.getClass().getSimpleName() +
-                            " can't move like that" + ANSI_RESET);
 
+            try {
+                // Validate move rule correctness using stateless validator
+                MoveValidator.validateMove(board, moveColor, from, to);
+
+                // Verify if move puts or leaves current player's King in check
+                if (board.wouldMovePutKingInCheck(from, to, moveColor)) {
+                    System.out.println(ANSI_RED + "You are under check" + ANSI_RESET);
                     continue;
                 }
-            } catch (NullPointerException ne) {
-                System.out.println(ANSI_RED + "Choose correct piece" + ANSI_RESET);
 
-                continue;
+                // If valid, commit move (updates piece location, handles castling rook and pawn promotion)
+                board.commitMove(from, to);
+
+                // Increment move and alternate turn color
+                moveCount++;
+                moveColor = (moveCount % 2 == 0) ? Color.WHITE : Color.BLACK;
+
+            } catch (ChessException ce) {
+                System.out.println(ANSI_RED + ce.getMessage() + ANSI_RESET);
             }
-            try {
-                board.isMoveValidOnBoard(piece, to);
-            } catch (RuntimeException re) {
-                System.out.println(ANSI_RED + re.getMessage() + ANSI_RESET);
-                continue;
-
-            }
-
-
-            if (board.amIUnderCheck(piece, from, to)) {
-                System.out.println(ANSI_RED + "You are under check" + ANSI_RESET);
-                continue;
-            }
-
-
-            board.commitMove(piece, from, to);
-
-
-            pawnManager.checkForUpgrade(piece, to, board);
-            kingManager.checkForChangeKingCoords(piece, to);
-
-
         }
-
-
     }
 
-
+    private Coordinates parseCoordinates(char fileChar, char rankChar) {
+        String fileStr = String.valueOf(fileChar).toUpperCase();
+        File file = File.valueOf(fileStr);
+        int rank = Character.getNumericValue(rankChar);
+        if (rank < 1 || rank > 8) {
+            throw new IllegalArgumentException();
+        }
+        return new Coordinates(file, rank);
+    }
 }
-
-
-
-
-
-
-

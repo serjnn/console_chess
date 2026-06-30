@@ -17,7 +17,7 @@ public class BoardConsoleRenderer {
     public static final String BLACK_BACK = ANSI_BLACK_SQUARE_BACKGROUND + "   " + ANSI_RESET;
 
 
-    public void render(Board board) {
+    public void render(Board board, Color moveColor) {
         System.out.print("  ");
 
         for (File file : File.values()) System.out.print(" " + file + " ");
@@ -48,7 +48,7 @@ public class BoardConsoleRenderer {
         System.out.print("  ");
         for (File file : File.values()) System.out.print(" " + file + " ");
         System.out.println();
-        System.out.println(Game.moveColor.toString() + "' turn");
+        System.out.println(moveColor.toString() + "'s turn");
     }
 
 
